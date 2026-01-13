@@ -1,6 +1,36 @@
 # WebClone
 
-一个用于 Web Agent 测试与评估的网站克隆项目。本项目提供了常见网站的离线克隆版本，用于在受控环境中测试 AI Agent 的网页交互能力。
+🌐 **Web Agent 评测环境** - 提供离线可控的网站克隆，用于 AI Agent 可复现测试与标准化评估。
+
+## 🎯 项目意义
+
+### 为什么需要 WebClone？
+
+在评测 Web Agent（如 GPT-4、Claude 等 AI 驱动的网页自动化代理）时，直接使用真实网站存在以下问题：
+
+| 问题 | 影响 |
+|------|------|
+| **网站内容动态变化** | 商品价格、库存、航班信息实时变动，导致测试结果不可复现 |
+| **网络依赖** | 需要稳定网络，测试速度受限于网络延迟 |
+| **反爬机制** | 频繁访问可能触发验证码或封禁 |
+| **数据不可控** | 无法预设特定场景（如"购物车有3件商品"） |
+| **隐私风险** | 测试可能涉及真实账户和支付信息 |
+
+### WebClone 的解决方案
+
+✅ **完全离线运行** - 无需网络，本地即可测试  
+✅ **数据可控** - 静态数据，每次测试环境一致  
+✅ **可复现评估** - 相同输入产生相同输出，便于对比不同 Agent 性能  
+✅ **批量数据生成** - 通过修改数据文件，快速生成不同测试场景  
+✅ **安全无风险** - 不涉及真实交易和个人信息  
+
+### 应用场景
+
+1. **Agent 能力评测** - 测试 AI Agent 在购物、预订等任务上的表现
+2. **对比实验** - 在相同环境下对比不同 Agent 或提示词的效果
+3. **回归测试** - 验证 Agent 更新后是否保持原有能力
+4. **教学演示** - 展示 Web Agent 工作原理
+5. **数据集构建** - 收集 Agent 交互轨迹用于训练和分析
 
 ## 🌐 已实现的网站
 
@@ -40,7 +70,7 @@ WebClone/
 │   │   ├── index.js         # 主页
 │   │   └── _app.js          # App 入口
 │   │
-│   ├── data/                # 静态数据
+│   ├── data/                # 📊 静态数据（可修改以生成不同测试场景）
 │   │   ├── amazonData.js    # Amazon 产品数据
 │   │   └── staticFlightData.js  # 航班数据
 │   │
@@ -82,6 +112,46 @@ npm run dev
 ```bash
 npm run build
 npm start
+```
+
+## 📊 批量数据生成
+
+通过修改 `src/data/` 下的数据文件，可以快速生成不同的测试场景：
+
+### 示例：修改商品数据
+
+```javascript
+// src/data/amazonData.js
+export const products = [
+  {
+    id: 1,
+    name: "iPhone 15 Pro",
+    price: 999.99,
+    rating: 4.8,
+    reviews: 1234,
+    inStock: true,
+    // 修改这些字段来创建不同场景
+  },
+  // 添加更多商品...
+];
+```
+
+### 示例：修改航班数据
+
+```javascript
+// src/data/staticFlightData.js
+export const flights = [
+  {
+    id: 1,
+    airline: "东方航空",
+    departure: "北京",
+    arrival: "上海",
+    price: 580,
+    duration: "2h 15m",
+    // 修改这些字段来创建不同场景
+  },
+  // 添加更多航班...
+];
 ```
 
 ## 📝 如何添加新网站
@@ -156,6 +226,29 @@ public/images/your_site/
 - **页面文件**: 小写，如 `index.js`、`search.js`
 - **数据文件**: 小驼峰，如 `amazonData.js`
 
+## 🔬 评测建议
+
+### 设计可复现的测试任务
+
+```javascript
+// 示例任务定义
+const task = {
+  id: "amazon-search-001",
+  description: "在 Amazon 搜索 'iPhone 15'，找到价格最低的商品并加入购物车",
+  startUrl: "/amazon",
+  expectedActions: ["search", "filter", "add_to_cart"],
+  successCriteria: "购物车中包含目标商品"
+};
+```
+
+### 记录 Agent 交互轨迹
+
+建议在测试时记录：
+- 每一步的 DOM 状态
+- Agent 的决策和动作
+- 任务完成时间
+- 最终结果（成功/失败）
+
 ## 🤝 贡献指南
 
 1. Fork 本仓库
@@ -163,6 +256,11 @@ public/images/your_site/
 3. 提交更改 (`git commit -m 'Add new site: xxx'`)
 4. 推送到分支 (`git push origin feature/new-site`)
 5. 创建 Pull Request
+
+欢迎贡献新的网站克隆！请确保：
+- 遵循现有的代码结构和命名规范
+- 提供完整的静态数据
+- 更新 README 中的网站列表
 
 ## 📜 License
 
