@@ -1,267 +1,74 @@
-# WebClone
+# Bose.com Clone
 
-🌐 **Web Agent 评测环境** - 提供离线可控的网站克隆，用于 AI Agent 可复现测试与标准化评估。
+这是一个基于 [Next.js](https://nextjs.org/) 构建的 Bose 官网克隆项目，旨在提供高度还原的视觉体验和核心电商功能。
 
-## 🎯 项目意义
+本项目已适配 [WebClone](https://github.com/franskey-0112/WebClone) 评测环境的标准目录结构。
 
-### 为什么需要 WebClone？
+## ✨ 主要功能
 
-在评测 Web Agent时，直接使用真实网站存在以下问题：
+### 1. 高度还原的首页
+- **像素级复刻**：精确还原了 Bose 官网的布局、排版、字体和色彩系统。
+- **响应式设计**：完美适配桌面端和移动端浏览。
+- **动态交互**：
+  - 导航栏下拉菜单
+  - 横向滚动的分类导航条（带左右切换按钮）
+  - 轮播图和 UGC 画廊展示
 
-| 问题 | 影响 |
-|------|------|
-| **网站内容动态变化** | 商品价格、库存、航班信息实时变动，导致测试结果不可复现 |
-| **网络依赖** | 需要稳定网络，测试速度受限于网络延迟 |
-| **反爬机制** | 频繁访问可能触发验证码或封禁 |
-| **数据不可控** | 无法预设特定场景（如"购物车有3件商品"） |
-| **隐私风险** | 测试可能涉及真实账户和支付信息 |
+### 2. 完整的商品加购流程
+- **商品浏览**：
+  - 首页推荐商品展示
+  - 搜索/分类列表页
+- **商品详情**：
+  - 详细的商品信息、价格、颜色选择
+  - “加入购物车”功能，实时更新购物车状态
+- **购物车管理**：
+  - 购物车页面展示已选商品
+  - 自动计算总价
+  - 状态持久化（基于 LocalStorage）
 
-### WebClone 的解决方案
+## 🛠️ 技术栈
 
-✅ **完全离线运行** - 无需网络，本地即可测试  
-✅ **数据可控** - 静态数据，每次测试环境一致  
-✅ **可复现评估** - 便于对比不同 Agent 性能  
-✅ **批量数据生成** - 通过修改数据文件，快速生成不同测试场景  
-✅ **安全无风险** - 不涉及真实交易和个人信息、默认为登录状态 
-
-### 应用场景
-
-1. **Agent 能力评测** - 测试 AI Agent 在购物、预订等任务上的表现
-2. **对比实验** - 在相同环境下对比不同 Agent 或提示词的效果
-3. **回归测试** - 验证 Agent 更新后是否保持原有能力
-4. **教学演示** - 展示 Web Agent 工作原理
-5. **数据集构建** - 可以批量收集 Agent 交互轨迹用于训练和分析
-
-## 🌐 已实现的网站
-
-| 网站 | 路径 | 功能 |
-|------|------|------|
-| 航班预订 | `/flights` | 航班搜索、筛选、预订 |
-| 亚马逊购物 | `/amazon` | 商品浏览、搜索、购物车、结算 |
-
-## 📁 项目结构
-
-```
-WebClone/
-├── src/
-│   ├── components/          # React 组件
-│   │   ├── amazon/          # Amazon 组件
-│   │   │   ├── AmazonHeader.js
-│   │   │   └── ProductCard.js
-│   │   ├── Header.js        # 通用头部组件
-│   │   ├── Footer.js        # 通用底部组件
-│   │   ├── SearchForm.js    # 搜索表单
-│   │   ├── FlightCard.js    # 航班卡片
-│   │   ├── FlightDetails.js # 航班详情
-│   │   └── FlightFilters.js # 航班筛选
-│   │
-│   ├── pages/               # Next.js 页面路由
-│   │   ├── amazon/          # Amazon 页面
-│   │   │   ├── index.js     # 首页
-│   │   │   ├── search.js    # 搜索页
-│   │   │   ├── cart.js      # 购物车
-│   │   │   ├── checkout.js  # 结算页
-│   │   │   ├── category/    # 分类页
-│   │   │   └── product/     # 产品详情页
-│   │   ├── flights/         # 航班页面
-│   │   │   ├── index.js     # 首页
-│   │   │   ├── search.js    # 搜索页
-│   │   │   └── [id]/book.js # 预订页
-│   │   ├── index.js         # 主页
-│   │   └── _app.js          # App 入口
-│   │
-│   ├── data/                # 静态数据（可修改以生成不同测试场景）
-│   │   ├── amazonData.js    # Amazon 产品数据
-│   │   └── staticFlightData.js  # 航班数据
-│   │
-│   ├── utils/               # 工具函数
-│   │   └── flightData.js
-│   │
-│   └── styles/
-│       └── globals.css
-│
-├── public/
-│   ├── favicon.ico
-│   └── images/
-│       └── amazon/          # Amazon 产品图片
-│
-├── package.json
-├── next.config.js
-├── tailwind.config.js
-└── postcss.config.js
-```
+- **框架**：Next.js
+- **UI 库**：React, Lucide React (图标)
+- **样式**：CSS Modules / Global CSS (Tailwind 风格工具类)
+- **状态管理**：React Context API (CartContext)
 
 ## 🚀 快速开始
 
-### 安装依赖
+### 前置要求
+- Node.js (推荐 v18+)
+- npm 或 yarn
+
+### 启动项目
+
+你可以直接运行根目录下的启动脚本（Windows）：
 
 ```bash
-npm install
+.\start.bat
 ```
 
-### 启动开发服务器
+或者手动运行：
 
 ```bash
+# 安装依赖
+npm install
+
+# 启动开发服务器
 npm run dev
 ```
 
-访问 http://localhost:3000 查看所有可用网站。
+访问 [http://localhost:3000](http://localhost:3000) 查看效果。
 
-### 构建生产版本
-
-```bash
-npm run build
-npm start
-```
-
-## 📊 批量数据生成
-
-通过修改 `src/data/` 下的数据文件，可以快速生成不同的测试场景：
-
-### 示例：修改商品数据
-
-```javascript
-// src/data/amazonData.js
-export const products = [
-  {
-    id: 1,
-    name: "iPhone 15 Pro",
-    price: 999.99,
-    rating: 4.8,
-    reviews: 1234,
-    inStock: true,
-    // 修改这些字段来创建不同场景
-  },
-  // 添加更多商品...
-];
-```
-
-### 示例：修改航班数据
-
-```javascript
-// src/data/staticFlightData.js
-export const flights = [
-  {
-    id: 1,
-    airline: "东方航空",
-    departure: "北京",
-    arrival: "上海",
-    price: 580,
-    duration: "2h 15m",
-    // 修改这些字段来创建不同场景
-  },
-  // 添加更多航班...
-];
-```
-
-## 📝 如何添加新网站
-
-### 1. 创建组件目录
-
-在 `src/components/` 下创建新网站的组件目录：
+## 📂 目录结构
 
 ```
-src/components/your_site/
-├── YourSiteHeader.js    # 头部导航
-├── YourSiteCard.js      # 列表卡片
-└── YourSiteFilters.js   # 筛选组件
+src/
+├── pages/          # 页面路由
+│   ├── bose/       # Bose 网站相关页面
+│   ├── _app.js     # 全局入口
+│   └── index.js    # 根路由重定向
+├── components/     # React 组件 (Header, Footer 等)
+├── data/           # 静态数据源
+└── context/        # 全局状态管理
+public/             # 静态资源 (图片等)
 ```
-
-### 2. 创建页面路由
-
-在 `src/pages/` 下创建页面目录：
-
-```
-src/pages/your_site/
-├── index.js             # 首页
-├── search.js            # 搜索/列表页
-└── [id].js              # 详情页（动态路由）
-```
-
-### 3. 创建静态数据
-
-在 `src/data/` 下创建数据文件：
-
-```javascript
-// src/data/yourSiteData.js
-export const yourSiteItems = [
-  {
-    id: 1,
-    name: "示例项目",
-    price: 99.99,
-    // ... 其他字段
-  }
-];
-```
-
-### 4. 添加到主页
-
-在 `src/pages/index.js` 的 `sites` 数组中添加：
-
-```javascript
-{
-  name: '你的网站',
-  path: '/your_site',
-  description: '网站描述',
-  color: '#颜色代码',
-  icon: '🎯'
-}
-```
-
-### 5. 添加资源文件（可选）
-
-如果需要图片资源，放置在：
-
-```
-public/images/your_site/
-├── products/
-├── banners/
-└── ...
-```
-
-## 🎨 命名规范
-
-- **组件目录**: 小写，如 `amazon`、`flights`
-- **组件文件**: 大驼峰，如 `ProductCard.js`
-- **页面文件**: 小写，如 `index.js`、`search.js`
-- **数据文件**: 小驼峰，如 `amazonData.js`
-
-## 🔬 评测建议
-
-### 设计可复现的测试任务
-
-```javascript
-// 示例任务定义
-const task = {
-  id: "amazon-search-001",
-  description: "在 Amazon 搜索 'iPhone 15'，找到价格最低的商品并加入购物车",
-  startUrl: "/amazon",
-  expectedActions: ["search", "filter", "add_to_cart"],
-  successCriteria: "购物车中包含目标商品"
-};
-```
-
-### 记录 Agent 交互轨迹
-
-建议在测试时记录：
-- 每一步的 DOM 状态
-- Agent 的决策和动作
-- 任务完成时间
-- 最终结果（成功/失败）
-
-## 🤝 贡献指南
-
-1. Fork 本仓库
-2. 创建功能分支 (`git checkout -b feature/new-site`)
-3. 提交更改 (`git commit -m 'Add new site: xxx'`)
-4. 推送到分支 (`git push origin feature/new-site`)
-5. 创建 Pull Request
-
-欢迎贡献新的网站克隆！请确保：
-- 遵循现有的代码结构和命名规范
-- 提供完整的静态数据
-- 更新 README 中的网站列表
-
-## 📜 License
-
-MIT License
