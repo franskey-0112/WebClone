@@ -182,13 +182,253 @@ This document outlines the skeleton structure, layout, styles, interactions, and
 
 ---
 
+## 7. Shopping Cart Page (`/cart`)
+
+### A. Skeleton Structure
+*   **Cart Header:** "Shopping Cart" title with item count badge.
+*   **Cart Items Container:**
+    *   **Item Row:** Each item in cart with:
+        *   Product Image (square, ~100px)
+        *   Product Title (linked to item page)
+        *   Item Condition
+        *   Seller Name (linked to store)
+        *   Quantity Selector (dropdown or +/- buttons)
+        *   Unit Price
+        *   Item Subtotal
+        *   "Remove" link
+        *   "Save for later" link
+*   **Cart Summary Sidebar (Right):**
+    *   Items subtotal
+    *   Shipping estimate
+    *   Estimated tax
+    *   **Order Total** (bold, large)
+    *   "Go to checkout" button (Primary Blue)
+    *   PayPal / Google Pay / Apple Pay buttons
+    *   Security badges
+*   **Save for Later Section:** Items moved from cart for future.
+*   **Recommended Items:** "You may also like" carousel.
+
+### B. Layout
+*   **Two-Column Layout:**
+    *   Cart Items: ~70% width
+    *   Summary Sidebar: ~30% width (sticky on scroll)
+*   **Mobile:** Single column, summary moves to bottom.
+
+### C. Details & Styles
+*   **Item Card:**
+    *   Border: Light gray (`#e5e5e5`)
+    *   Border Radius: 8px
+    *   Background: White
+    *   Seller info with location badge
+*   **Quantity Selector:** Dropdown or stepper with border
+*   **Remove/Save Links:** Text links, underlined on hover
+*   **Summary Card:**
+    *   Background: Light gray (`#f7f7f7`)
+    *   Border Radius: 12px
+    *   Padding: 24px
+*   **Checkout Button:** Full-width, pill-shaped, Blue (`#3665f3`)
+
+### D. Interactions
+*   **Quantity Change:** Updates subtotal in real-time (no page reload)
+*   **Remove Item:** Fade out animation, updates cart count in header
+*   **Hover on Item:** Subtle background color change
+
+### E. Animations
+*   **Item Removal:** Smooth fade + slide up
+*   **Price Updates:** Number transition effect
+
+---
+
+## 8. Checkout/Payment Page (`/pay/rxo`)
+
+### A. Skeleton Structure
+*   **Simplified Header:** eBay logo only (no navigation)
+*   **Progress Steps:** Visual stepper (Review, Shipping, Payment, Confirm)
+*   **Main Content (Left ~65%):**
+    *   **Step 1 - Review Items:**
+        *   Item image, title, quantity, price
+        *   Seller info
+    *   **Step 2 - Shipping:**
+        *   Shipping Address (editable)
+        *   Delivery Options (Standard, Express, etc.)
+        *   Estimated delivery date
+    *   **Step 3 - Payment Method:**
+        *   Saved payment methods (cards with icons)
+        *   Add new card form (Card Number, Expiry, CVV, Billing Address)
+        *   Alternative payment buttons (PayPal, Apple Pay, Google Pay, Klarna, Venmo)
+    *   **Coupon/Promo Code Input:** Expandable section
+    *   **Message to Seller:** Optional text area
+*   **Order Summary Sidebar (Right ~35%):**
+    *   Item(s) thumbnails
+    *   Item subtotal
+    *   Shipping cost
+    *   Sales tax
+    *   **Total** (large, bold)
+    *   "Confirm and pay" button
+    *   eBay Money Back Guarantee badge
+
+### B. Layout
+*   **Two-Column Layout:**
+    *   Main checkout form: ~65% width
+    *   Order Summary: ~35% width (sticky)
+*   **Mobile:** Single column, summary at top (collapsed) or bottom
+
+### C. Details & Styles
+*   **Step Indicator:**
+    *   Active step: Blue circle with number
+    *   Completed step: Blue checkmark
+    *   Future step: Gray circle
+*   **Payment Cards:**
+    *   Card brand icons (Visa, Mastercard, Amex, Discover)
+    *   Radio button selection
+    *   Card ending in •••• XXXX format
+*   **Form Inputs:**
+    *   Height: 48px
+    *   Border: 1px solid `#767676`
+    *   Border Radius: 8px
+    *   Focus: Blue border (`#3665f3`)
+*   **Security Icons:** Lock icon near payment, SSL badges
+*   **Confirm Button:** Large, Blue pill, full-width
+
+### D. Interactions
+*   **Address Edit:** Inline editing or modal popup
+*   **Payment Method Select:** Radio buttons or clickable cards
+*   **Card Input:** Auto-format as user types (4-digit groups)
+*   **PayPal Click:** Redirects to PayPal modal/popup
+
+### E. Animations
+*   **Step Transitions:** Smooth accordion expand/collapse
+*   **Loading States:** Spinner on payment processing
+*   **Success:** Checkmark animation on order completion
+
+---
+
+## 9. My eBay Summary Page (`/mye/myebay/summary`)
+
+### A. Skeleton Structure
+*   **Left Sidebar Navigation:**
+    *   Activity (default)
+    *   Messages (with unread count badge)
+    *   Account
+    *   Buying
+    *   Selling (links to Seller Hub for sellers)
+*   **Main Content Area:**
+    *   **Summary Cards/Modules:**
+        *   **Buying:**
+            *   "Watching" items count with thumbnails
+            *   "Bids/Offers" active count
+            *   "Purchases" recent orders
+            *   "Saved Searches" count
+        *   **Selling:**
+            *   "Active Listings" count
+            *   "Sold" items count
+            *   "Unsold" items count
+            *   Draft listings
+        *   **Saved Sellers:** List of followed stores
+        *   **Recent Activity Feed:** Timeline of actions
+*   **Right Sidebar (Optional):**
+    *   Account summary
+    *   Quick links
+
+### B. Layout
+*   **Three-Column Layout:**
+    *   Left Nav: ~200px fixed width
+    *   Main Content: Flexible (60-70%)
+    *   Right Sidebar: ~250px (optional, may not always show)
+*   **Dashboard Grid:** Cards arranged in 2-3 column grid within main content
+*   **Mobile:** Collapsible navigation, single column content
+
+### C. Details & Styles
+*   **Navigation:**
+    *   Background: White
+    *   Active item: Blue text, left border indicator
+    *   Icons alongside text labels
+*   **Summary Cards:**
+    *   Background: White
+    *   Border: 1px solid `#e5e5e5`
+    *   Border Radius: 12px
+    *   Header: Bold title + "See all" link
+    *   Content: Thumbnail grid or list
+*   **Badge Counts:** Small pill badges with numbers (blue background)
+*   **Empty States:** Illustrative icons with "No items" message
+
+### D. Interactions
+*   **Card Expansion:** Click card header to expand/navigate
+*   **Quick Actions:**
+    *   "Relist" button on sold items
+    *   "Pay now" button on won auctions
+    *   "Leave feedback" prompts
+*   **Sidebar Toggle:** Mobile hamburger menu
+
+### E. Animations
+*   **Card Hover:** Subtle shadow increase
+*   **Navigation:** Smooth highlight transitions
+*   **Loading:** Skeleton placeholders while data loads
+
+---
+
 ## Summary of Common Elements
 
 *   **Font:** Market Sans (primary), Arial (fallback).
-*   **Primary Action Color:** eBay Blue (`#3663f4`).
+*   **Primary Action Color:** eBay Blue (`#3665f3`).
 *   **Secondary Action Color:** eBay Red (`#dd1e31`) for deals/alerts.
 *   **Border Radius:** 
-    *   Buttons: High (Pill shape).
-    *   Cards: Low/Medium (approx 4-8px).
-    *   Inputs: Medium/High.
+    *   Buttons: High (Pill shape, ~24px).
+    *   Cards: Medium (8-12px).
+    *   Inputs: Medium (8px).
 *   **Shadows:** Very subtle drop shadows used primarily on hover states or elevated dropdown menus.
+*   **Responsive Breakpoints:**
+    *   Mobile: < 768px
+    *   Tablet: 768px - 1024px
+    *   Desktop: > 1024px
+*   **Consistent Components:**
+    *   Headers use simplified layout in checkout flows
+    *   Footers may be minimal/hidden in checkout
+    *   Trust badges appear near payment areas
+
+---
+
+## 10. My eBay Watchlist Page (`/mye/myebay/watchlist`)
+
+### A. Skeleton Structure
+*   **Breadcrumbs / Top Tabs:** "Activity", "Messages", "Account" (Market-wide My eBay tabs).
+*   **Page Layout:**
+    *   **Left Sidebar:** Vertical navigation (Summary, Recently viewed, Bids & offers, Watchlist, Purchases, etc.).
+    *   **Main Content Area:**
+        *   **Header Section:** "My eBay - Watchlist" title with a dropdown arrow, plus a Search bar specifically for the watchlist.
+        *   **Action Bar:** Checkbox for "Select All", "Add to custom list" button (muted if none selected), "Delete" button.
+        *   **Filters & Sorting:** "Status: All", "Sort: Ending soonest" dropdowns.
+        *   **Category Pills:** Horizontal scroll of category filter chips (e.g., "All Categories (2)", "Cell Phones & Smartphones (1)", "Baby (1)").
+        *   **Watchlist Items List:** Vertical stack of item cards.
+        *   **Recommendation Section:** "Sponsored items similar to what you've watched" carousel at the bottom.
+
+### B. Layout
+*   **Container Width:** Matches the standard eBay 1400px maximum.
+*   **Sidebar:** Fixed width (~200px) on the left.
+*   **Main Content:** Flexible width (~85%) taking up the rest of the space.
+*   **Item Card Layout (List View):**
+    *   Left: Selection checkbox + large thumbnail.
+    *   Center: Item information (Title, Price, Feedback, Status).
+    *   Right: Primary actions ("Buy It Now", "Filled filled", "View in cart", "More Actions").
+
+### C. Details & Styles
+*   **Title Font:** Bold, ~24px for "My eBay", slightly smaller for "My eBay - Watchlist".
+*   **Category Pills:**
+    *   **Active:** Black background or white with thick black border (depending on variant).
+    *   **Inactive:** Light gray background, pill-shaped.
+*   **Item Card:**
+    *   Border: Subtle top/bottom border separating items.
+    *   Image: Rounded corners (~8px), consistent aspect ratio.
+    *   Title: Standard listing title style (black, bold on hover).
+    *   Price: Bold, with conversion notes if international.
+*   **Action Buttons (Right Column):**
+    *   "Buy It Now": Standard primary pill button (Blue bg).
+    *   "View in cart": Standard secondary pill button (Blue border, white bg).
+    *   "More Actions": Text with a chevron down, underlined on hover.
+
+### D. Interactions
+*   **Search Watchlist:** Instant filtering of the list as the user types or clicks the Search button.
+*   **Bulk Actions:** "Delete" and "Add to custom list" become active only when one or more checkboxes are selected.
+*   **Category Filter:** Clicking a pill filters the list to show only items from that category.
+*   **More Actions Dropdown:** Opens a menu with additional options like "Contact Seller", "Sell similar", etc.
+

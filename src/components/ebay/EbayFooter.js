@@ -3,7 +3,7 @@ import { footerLinks } from '../../data/ebayData';
 const EbayFooter = () => {
     return (
         <footer className="bg-white border-t border-gray-200 mt-10 pt-10 pb-6 font-sans text-xs text-[#555]">
-            <div className="max-w-[1400px] mx-auto px-4">
+            <div className="gh-container">
                 <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8">
                     {Object.entries(footerLinks).map(([section, links]) => (
                         <div key={section}>

@@ -1,16 +1,20 @@
 import { useRouter } from 'next/router';
 import Link from 'next/link';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Head from 'next/head';
 import EbayHeader from '../../../components/ebay/EbayHeader';
 import EbayFooter from '../../../components/ebay/EbayFooter';
 import { featuredProducts } from '../../../data/ebayData';
 import RelatedItems from '../../../components/ebay/RelatedItems';
 import AboutSection from '../../../components/ebay/AboutSection';
+import AddToCartModal from '../../../components/ebay/AddToCartModal';
+import { useWatchlist } from '../../../utils/WatchlistContext';
 
 const EbayItem = () => {
     const router = useRouter();
     const { id } = router.query;
+    const { isInWatchlist, toggleWatchlist } = useWatchlist();
+    const [showCartModal, setShowCartModal] = useState(false);
 
     // Find product or use placeholder
     const product = featuredProducts.find(p => p.id === Number(id)) || featuredProducts[0];
@@ -48,7 +52,7 @@ const EbayItem = () => {
             </Head>
             <EbayHeader />
 
-            <div className="max-w-[1600px] mx-auto px-4 py-8">
+            <div className="gh-container py-8">
                 <div className="flex flex-col lg:flex-row gap-8">
 
                     {/* Left: Image Gallery (Vertical Thumbnails + Main) */}
@@ -300,17 +304,66 @@ const EbayItem = () => {
                         </div>
 
                         {/* 8. Buttons */}
-                        <div className="flex flex-col gap-3 w-full mb-8">
-                            <button className="w-full bg-[#3665f3] text-white py-3 rounded-full font-bold text-lg hover:bg-blue-700 transition-colors shadow-sm cursor-pointer">
+                        <div className="flex flex-col gap-3 w-full mb-6">
+                            <button
+                                onClick={() => {
+                                    // Save item to cart and go to checkout
+                                    try {
+                                        localStorage.setItem('ebay_cart', JSON.stringify([{ id: product.id, quantity: 1 }]));
+                                        window.dispatchEvent(new Event('cartUpdated'));
+                                    } catch (e) { }
+                                    router.push('/ebay/checkout');
+                                }}
+                                className="w-full bg-[#3665f3] text-white py-3 rounded-full font-bold text-lg hover:bg-blue-700 transition-colors shadow-sm cursor-pointer"
+                            >
                                 Buy It Now
                             </button>
-                            <button className="w-full bg-white text-[#3665f3] py-3 rounded-full font-bold text-lg hover:bg-[#e5efff] transition-colors border border-[#3665f3] cursor-pointer">
+                            <button
+                                onClick={() => {
+                                    // Add item to cart and show modal
+                                    try {
+                                        const cartStr = localStorage.getItem('ebay_cart');
+                                        let cart = cartStr ? JSON.parse(cartStr) : [];
+                                        const existing = cart.find(i => i.id === product.id);
+                                        if (existing) {
+                                            existing.quantity += 1;
+                                        } else {
+                                            cart.push({ id: product.id, quantity: 1 });
+                                        }
+                                        localStorage.setItem('ebay_cart', JSON.stringify(cart));
+                                        window.dispatchEvent(new Event('cartUpdated'));
+                                    } catch (e) { }
+                                    setShowCartModal(true);
+                                }}
+                                className="w-full bg-white text-[#3665f3] py-3 rounded-full font-bold text-lg hover:bg-[#e5efff] transition-colors border border-[#3665f3] cursor-pointer"
+                            >
                                 Add to cart
                             </button>
-                            <button className="w-full bg-white text-[#3665f3] py-3 rounded-full font-bold text-lg hover:bg-[#e5efff] border border-[#3665f3] flex items-center justify-center gap-2 transition-colors cursor-pointer">
-                                <span className="text-xl">♡</span>
-                                Add to Watchlist
+                            <button
+                                className={`w-full py-3 rounded-full font-bold text-lg flex items-center justify-center gap-2 transition-colors cursor-pointer border ${isInWatchlist(product.id)
+                                    ? 'bg-[#191919] text-white border-[#191919] hover:bg-black'
+                                    : 'bg-white text-[#3665f3] border-[#3665f3] hover:bg-[#e5efff]'
+                                    }`}
+                                onClick={() => toggleWatchlist(product)}
+                            >
+                                <svg className="w-5 h-5" fill={isInWatchlist(product.id) ? "white" : "none"} stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+                                </svg>
+                                {isInWatchlist(product.id) ? 'Watching' : 'Add to Watchlist'}
                             </button>
+                        </div>
+
+                        {/* eBay Money Back Guarantee Banner */}
+                        <div className="bg-[#f7f7f7] rounded-lg p-4 mb-8">
+                            <div className="flex items-start gap-3">
+                                <svg className="w-8 h-8 text-[#3665f3] flex-shrink-0" viewBox="0 0 24 24" fill="currentColor">
+                                    <path fillRule="evenodd" d="M12.516 2.17a.75.75 0 00-1.032 0 11.209 11.209 0 01-7.877 3.08.75.75 0 00-.722.515A12.74 12.74 0 002.25 9.75c0 5.942 4.064 10.933 9.563 12.348a.749.749 0 00.374 0c5.499-1.415 9.563-6.406 9.563-12.348 0-1.39-.223-2.73-.635-3.985a.75.75 0 00-.722-.516l-.143.001c-2.996 0-5.717-1.17-7.734-3.08zm3.094 8.016a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clipRule="evenodd" />
+                                </svg>
+                                <div>
+                                    <h3 className="font-bold text-[#191919] text-sm mb-1">eBay Money Back Guarantee</h3>
+                                    <p className="text-xs text-[#767676]">Get the item you ordered or get your money back. <a href="#" className="text-[#3665f3] hover:underline">Learn more</a></p>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -345,6 +398,13 @@ const EbayItem = () => {
                     </div>
                 </div>
             </div >
+
+            <AddToCartModal
+                isOpen={showCartModal}
+                onClose={() => setShowCartModal(false)}
+                product={product}
+                cartItemCount={1}
+            />
 
             <EbayFooter />
         </div >

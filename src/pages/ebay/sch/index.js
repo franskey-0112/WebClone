@@ -6,11 +6,13 @@ import EbayHeader from '../../../components/ebay/EbayHeader';
 import EbayFooter from '../../../components/ebay/EbayFooter';
 import { featuredProducts } from '../../../data/ebayData';
 import { categoryLayouts } from '../../../data/categoryLayouts';
+import { useWatchlist } from '../../../utils/WatchlistContext';
 
 const EbaySearch = () => {
     const router = useRouter();
     const { _nkw, _sacat } = router.query;
     const [results, setResults] = useState([]);
+    const { isInWatchlist, toggleWatchlist } = useWatchlist();
     const [hubData, setHubData] = useState(null);
 
     // Simple category ID to Name mapping based on EbayHeader.js
@@ -271,38 +273,119 @@ const EbaySearch = () => {
                         </div>
 
                         {/* Standard Search Results */}
-                        <div className="flex-1">
-                            <h1 className="text-2xl font-bold mb-2">Results for <span className="text-[#191919]">{_nkw || "Anything"}</span></h1>
-                            <p className="text-sm text-[#767676] mb-4">{results.length} items found</p>
+                        <div className="flex-1 min-w-0">
+                            {/* Results Header */}
+                            <div className="flex flex-col gap-3 mb-4">
+                                <div className="flex items-center justify-between">
+                                    <h1 className="text-2xl font-bold">Results for <span className="text-[#191919]">{_nkw || "Anything"}</span></h1>
+                                    {/* Save this search */}
+                                    <button className="flex items-center gap-2 text-[#191919] hover:underline font-medium text-sm">
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+                                        </svg>
+                                        Save this search
+                                    </button>
+                                </div>
 
-                            <div className="space-y-6">
+                                {/* Controls Row */}
+                                <div className="flex items-center justify-between border-b border-gray-200 pb-3">
+                                    <p className="text-sm text-[#767676]">{results.length} results</p>
+                                    <div className="flex items-center gap-4">
+                                        {/* View Switcher */}
+                                        <div className="flex items-center border border-gray-300 rounded-md overflow-hidden">
+                                            <button className="p-2 bg-[#191919] text-white" title="List view">
+                                                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                                    <path d="M3 4h18v2H3V4zm0 7h18v2H3v-2zm0 7h18v2H3v-2z" />
+                                                </svg>
+                                            </button>
+                                            <button className="p-2 hover:bg-gray-100 text-[#767676]" title="Gallery view">
+                                                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                                    <path d="M3 3h8v8H3V3zm0 10h8v8H3v-8zm10-10h8v8h-8V3zm0 10h8v8h-8v-8z" />
+                                                </svg>
+                                            </button>
+                                        </div>
+                                        {/* Sort Dropdown */}
+                                        <select className="border border-gray-300 rounded-md px-3 py-1.5 text-sm focus:border-[#191919] focus:outline-none cursor-pointer">
+                                            <option>Best Match</option>
+                                            <option>Time: ending soonest</option>
+                                            <option>Time: newly listed</option>
+                                            <option>Price + Shipping: lowest first</option>
+                                            <option>Price + Shipping: highest first</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Results List */}
+                            <div className="space-y-4">
                                 {results.length > 0 ? results.map((product) => (
-                                    <Link key={product.id} href={`/ebay/itm/${product.id}`} className="flex gap-6 p-4 border border-gray-300 rounded hover:shadow-lg transition-shadow bg-white text-[#333] hover:text-[#333]">
-                                        <div className="w-[200px] h-[200px] bg-gray-100 flex items-center justify-center text-6xl rounded flex-shrink-0 overflow-hidden">
+                                    <Link key={product.id} href={`/ebay/itm/${product.id}`} className="flex gap-6 p-4 border border-gray-200 rounded-lg hover:shadow-lg transition-shadow bg-white text-[#333] hover:text-[#333] group relative">
+                                        {/* Product Image */}
+                                        <div className="w-[180px] h-[180px] bg-gray-100 flex items-center justify-center rounded-lg flex-shrink-0 overflow-hidden relative">
                                             {product.image ? (
                                                 <img src={product.image} alt={product.title} className="w-full h-full object-contain p-2 mix-blend-multiply" />
                                             ) : (
-                                                "📦"
+                                                <span className="text-6xl">📦</span>
+                                            )}
+                                            {/* Sponsored Badge */}
+                                            {product.id % 3 === 0 && (
+                                                <span className="absolute bottom-2 left-2 text-[10px] text-[#767676] bg-white/90 px-1.5 py-0.5 rounded">SPONSORED</span>
                                             )}
                                         </div>
-                                        <div className="flex-1">
-                                            <h3 className="text-lg text-[#191919] hover:underline font-medium mb-1">{product.title}</h3>
-                                            <p className="text-xs text-[#767676] mb-2">{product.condition}</p>
+
+                                        {/* Product Info */}
+                                        <div className="flex-1 min-w-0">
+                                            <h3 className="text-base text-[#191919] group-hover:underline font-medium mb-1 line-clamp-2">{product.title}</h3>
+                                            <p className="text-xs text-[#767676] mb-2">{product.condition || 'Brand New'}</p>
+
                                             <div className="flex items-baseline gap-2 mb-1">
-                                                <span className="text-2xl font-bold text-[#191919]">${product.price.toFixed(2)}</span>
+                                                <span className="text-xl font-bold text-[#191919]">${product.price.toFixed(2)}</span>
                                                 {product.originalPrice && (
                                                     <span className="text-sm text-[#767676] line-through">was ${product.originalPrice.toFixed(2)}</span>
                                                 )}
                                             </div>
+
                                             {product.discount && (
                                                 <div className="text-sm text-[#dd1e31] font-semibold mb-2">{product.discount}</div>
                                             )}
-                                            <div className="text-sm text-[#767676] mb-1">Free shipping</div>
-                                            <div className="text-sm text-[#767676]">Free returns</div>
-                                            {/* Seller Info */}
-                                            <div className="text-sm text-[#767676] mt-2">
-                                                Sold by <span className="text-[#191919] font-medium">{product.seller?.username || 'eBay Seller'}</span> ({product.seller?.feedbackScore || Math.floor(Math.random() * 1000)})
+
+                                            <div className="flex items-center gap-4 text-sm text-[#767676]">
+                                                <span className="flex items-center gap-1">
+                                                    <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 24 24">
+                                                        <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" />
+                                                    </svg>
+                                                    Free shipping
+                                                </span>
+                                                <span>Free returns</span>
                                             </div>
+
+                                            {/* Seller Info */}
+                                            <div className="text-sm text-[#767676] mt-3 flex items-center gap-1">
+                                                <span>From</span>
+                                                <span className="text-[#191919] font-medium hover:underline">{product.seller?.username || 'eBay Seller'}</span>
+                                                <span className="text-[#767676]">({product.seller?.feedbackScore || Math.floor(Math.random() * 1000) + 100})</span>
+                                                <span className="text-green-600 font-medium">{product.seller?.positivePercentage || '99.2'}%</span>
+                                            </div>
+                                        </div>
+
+                                        {/* Watchlist Heart - Right Side */}
+                                        <div className="flex flex-col items-center gap-2 flex-shrink-0">
+                                            <button
+                                                className={`w-10 h-10 rounded-full border flex items-center justify-center transition-colors ${isInWatchlist(product.id)
+                                                    ? 'bg-[#191919] border-[#191919] text-white hover:bg-black'
+                                                    : 'bg-white border-gray-300 text-[#191919] hover:bg-gray-100'
+                                                    }`}
+                                                onClick={(e) => {
+                                                    e.preventDefault();
+                                                    e.stopPropagation();
+                                                    toggleWatchlist(product);
+                                                }}
+                                                title={isInWatchlist(product.id) ? "Remove from Watchlist" : "Add to Watchlist"}
+                                            >
+                                                <svg className="w-5 h-5" fill={isInWatchlist(product.id) ? "white" : "none"} stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+                                                </svg>
+                                            </button>
                                         </div>
                                     </Link>
                                 )) : (
@@ -312,6 +395,37 @@ const EbaySearch = () => {
                                     </div>
                                 )}
                             </div>
+
+                            {/* Pagination */}
+                            {results.length > 0 && (
+                                <div className="flex justify-center items-center gap-2 mt-8 pt-6 border-t border-gray-200">
+                                    <button className="w-10 h-10 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100 transition-colors">
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                                        </svg>
+                                    </button>
+                                    {[1, 2, 3, 4, 5].map((page) => (
+                                        <button
+                                            key={page}
+                                            className={`w-10 h-10 rounded-full flex items-center justify-center font-medium transition-colors ${page === 1
+                                                ? 'bg-[#191919] text-white'
+                                                : 'hover:bg-gray-100 text-[#191919]'
+                                                }`}
+                                        >
+                                            {page}
+                                        </button>
+                                    ))}
+                                    <span className="text-[#767676]">...</span>
+                                    <button className="w-10 h-10 rounded-full flex items-center justify-center font-medium hover:bg-gray-100 text-[#191919]">
+                                        25
+                                    </button>
+                                    <button className="w-10 h-10 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100 transition-colors">
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     </div>
                 )}

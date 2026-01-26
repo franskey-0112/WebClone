@@ -6,10 +6,12 @@ import PromoCarousel from '../../components/ebay/PromoCarousel';
 import { heroSlides, featuredProducts } from '../../data/ebayData';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useWatchlist } from '../../utils/WatchlistContext';
 
 const EbayHome = () => {
     const [recentItems, setRecentItems] = useState([]);
     const recentItemsListRef = useRef(null);
+    const { isInWatchlist, toggleWatchlist } = useWatchlist();
 
     useEffect(() => {
         // Load recent items from local storage
@@ -119,10 +121,21 @@ const EbayHome = () => {
                                                 <article data-moduleid="146925" data-typename="GridItemModule" data-viewport={JSON.stringify({ trackableId: `01KF340G2DCW04VJDKZ3R9MR9T-${product.id}` })} className="flex flex-col dp-entry-animiation gap-150 h-full">
                                                     <div data-itemid={product.id} data-trackableid={`01KF340G2DCW04VJDKZ3R9MR9T-${product.id}`} data-trackablemoduleid="146925" className="relative rounded-100 media-scrim-rgba">
                                                         <span data-testid="dp-iti-button-undefined" className="absolute right-100 top-100 z-10" style={{ pointerEvents: 'auto' }}>
-                                                            <button aria-label="Watchlist" aria-pressed="false" className="dp-watchlist-toggle-button border-0 cursor-pointer h-400 inline-flex items-center justify-center p-0 relative rounded-full text-primary transition-all w-400 focus:opacity-90 hover:opacity-90" title="Watchlist" type="button" onClick={(e) => { e.preventDefault(); e.stopPropagation(); }}>
+                                                            <button
+                                                                aria-label="Watchlist"
+                                                                aria-pressed={isInWatchlist(product.id)}
+                                                                className="dp-watchlist-toggle-button border-0 cursor-pointer h-400 inline-flex items-center justify-center p-0 relative rounded-full text-primary transition-all w-400 focus:opacity-90 hover:opacity-90"
+                                                                title="Watchlist"
+                                                                type="button"
+                                                                onClick={(e) => {
+                                                                    e.preventDefault();
+                                                                    e.stopPropagation();
+                                                                    toggleWatchlist(product);
+                                                                }}
+                                                            >
                                                                 <span data-testid="icon-heart-16">
-                                                                    <svg aria-hidden="true" className="icon icon--16" focusable="false">
-                                                                        <use href="#icon-heart-16"></use>
+                                                                    <svg aria-hidden="true" className="icon icon--16" focusable="false" style={{ color: isInWatchlist(product.id) ? '#191919' : 'inherit' }}>
+                                                                        <use href={isInWatchlist(product.id) ? "#icon-heart-filled-16" : "#icon-heart-16"}></use>
                                                                     </svg>
                                                                 </span>
                                                             </button>
@@ -193,11 +206,9 @@ const EbayHome = () => {
 
             <EbayHeader />
 
-            <main className="mx-auto w-full px-0" style={{ maxWidth: 'var(--page-grid-max-width)' }}>
-
+            <main className="gh-container">
                 {/* Section 1: Recently Viewed (Dynamic or Default) */}
-                {/* Section 1: Recently Viewed (Dynamic or Default) */}
-                <section className="flex flex-col gap-[var(--spacing-200)] page-grid-container home-item-carousel mb-8">
+                <section className="flex flex-col gap-[var(--spacing-200)] home-item-carousel mb-8 mt-4">
                     <div className="dp-item-carousel-module__wrapper">
                         <div className="dp-item-carousel-module__container">
                             <div className="flex flex-col dp-item-carousel-module__header mb-4">
@@ -472,11 +483,18 @@ const EbayHome = () => {
                             {featuredProducts.filter(p => (p.category === 'Clothing, Shoes & Accessories' || p.category === 'Jewelry & Watches') && p.title.toLowerCase().includes('men') && !p.title.toLowerCase().includes('women')).slice(1, 5).map(p => (
                                 <Link key={p.id} href={`/ebay/itm/${p.id}`} className="relative w-[198px] h-[198px] rounded-100 media-scrim-rgba group cursor-pointer block">
                                     <img src={p.image} className="product-image block w-full h-full rounded-100 product-image-transition object-cover" alt={p.title} />
-                                    <div className="absolute top-2 right-2 bg-white rounded-full p-1.5 shadow-sm z-10">
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 text-[#191919]">
-                                            <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+                                    <button
+                                        className="absolute top-2 right-2 bg-white rounded-full p-1.5 shadow-sm z-10 border-0 cursor-pointer"
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                            toggleWatchlist(p);
+                                        }}
+                                    >
+                                        <svg aria-hidden="true" className="w-4 h-4 text-[#191919]" focusable="false">
+                                            <use href={isInWatchlist(p.id) ? "#icon-heart-filled-16" : "#icon-heart-16"}></use>
                                         </svg>
-                                    </div>
+                                    </button>
                                 </Link>
                             ))}
                         </div>
@@ -511,11 +529,18 @@ const EbayHome = () => {
                             {featuredProducts.filter(p => p.category === 'Health & Beauty').slice(1, 5).map(p => (
                                 <Link key={p.id} href={`/ebay/itm/${p.id}`} className="relative w-[198px] h-[198px] rounded-100 media-scrim-rgba group cursor-pointer block">
                                     <img src={p.image} className="product-image block w-full h-full rounded-100 product-image-transition object-cover" alt={p.title} />
-                                    <div className="absolute top-2 right-2 bg-white rounded-full p-1.5 shadow-sm z-10">
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-4 h-4 text-[#191919]">
-                                            <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+                                    <button
+                                        className="absolute top-2 right-2 bg-white rounded-full p-1.5 shadow-sm z-10 border-0 cursor-pointer"
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                            toggleWatchlist(p);
+                                        }}
+                                    >
+                                        <svg aria-hidden="true" className="w-4 h-4 text-[#191919]" focusable="false">
+                                            <use href={isInWatchlist(p.id) ? "#icon-heart-filled-16" : "#icon-heart-16"}></use>
                                         </svg>
-                                    </div>
+                                    </button>
                                 </Link>
                             ))}
                         </div>
@@ -535,6 +560,9 @@ const EbayHome = () => {
             <svg style={{ display: 'none' }} aria-hidden="true">
                 <defs>
                     <symbol id="icon-heart-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
+                    </symbol>
+                    <symbol id="icon-heart-filled-16" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" strokeWidth="2.5">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z" />
                     </symbol>
                     <symbol id="icon-chevron-right-16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">

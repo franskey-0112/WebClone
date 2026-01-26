@@ -18,6 +18,25 @@
     --breakpoint-large: 800px;
     --breakpoint-medium: 600px;
     --breakpoint-small: 512px;
+
+    /* Standardized Container - eBay typically targets 1200-1280px */
+    .gh-container {
+        max-width: 1280px;
+        margin-left: auto;
+        margin-right: auto;
+        padding-left: 16px;
+        padding-right: 16px;
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    @media (min-width: 1200px) {
+        .gh-container {
+            padding-left: 24px;
+            padding-right: 24px;
+        }
+    }
+
     --color-avocado-100: #fdfef6;
     --color-avocado-200: #f8fcde;
     --color-avocado-300: #e9f5a0;
@@ -356,7 +375,8 @@
     --radius-photo-small: 8px;
     --radius-popover-container: 16px;
     --radius-small: 4px;
-    --shadow-strong: 0px 5px 17px 0px rgba(0, 0, 0, 0.2), 0px 2px 7px 0px rgba(0, 0, 0, 0.15);
+    --shadow-strong: 0px 5px 17px 0px rgba(0, 0, 0, 0.2),
+    0px 2px 7px 0px rgba(0, 0, 0, 0.15);
     --shadow-subtle: 0px 4px 12px 0px rgba(0, 0, 0, 0.07);
     --spacing-0: 0px;
     --spacing-100: 8px;
@@ -390,10 +410,18 @@
     --border-radius-50: 8px;
     --border-radius-100: 16px;
     --border-radius-150: 24px;
-    --color-neutral-100-rgb: 255, 255, 255;
-    --color-neutral-200-rgb: 247, 247, 247;
-    --color-neutral-800-rgb: 25, 25, 25;
-    --color-neutral-900-rgb: 0, 0, 0;
+    --color-neutral-100-rgb: 255,
+    255,
+    255;
+    --color-neutral-200-rgb: 247,
+    247,
+    247;
+    --color-neutral-800-rgb: 25,
+    25,
+    25;
+    --color-neutral-900-rgb: 0,
+    0,
+    0;
 
     --color-ai-solid-blue-strong: #0968f6;
     --color-ai-solid-blue-subtle: #f0f6fe;
@@ -843,7 +871,7 @@
     justify-content: space-between;
     align-items: center;
     padding: 0;
-    height: 32px;
+    height: 28px;
 }
 
 @media (min-width: 1280px) {
@@ -1057,12 +1085,16 @@
 
 /* Header Main Section */
 .gh-header__main {
-    padding: 12px 12px;
+    padding: 8px 0;
+    min-height: 52px;
+    border-top: 1px solid #e5e5e5;
+    background: #fff;
+}
+
+.gh-header__main .gh-container {
     display: flex;
     align-items: center;
-    gap: 24px;
-    min-height: 100px;
-    border-top: 1px solid #e5e5e5;
+    gap: 32px;
 }
 
 @media (min-width: 1280px) {
@@ -1098,7 +1130,7 @@
     color: #333;
     white-space: normal;
     width: 60px;
-    line-height: 1.3;
+    line-height: 1.2;
     text-align: left;
 }
 
@@ -1225,9 +1257,9 @@
     flex: 1;
     border: none;
     outline: none;
-    padding: 10px 40px 10px 40px;
-    font-size: 16px;
-    height: 40px;
+    padding: 6px 40px 6px 40px;
+    font-size: 15px;
+    height: 36px;
     box-sizing: border-box;
     color: #191919;
     background: transparent;
@@ -1272,9 +1304,9 @@
 .gh-search-categories {
     border: none;
     border-left: 1px solid #e5e5e5;
-    padding: 10px 28px 10px 12px;
-    font-size: 14px;
-    height: 40px;
+    padding: 6px 28px 6px 12px;
+    font-size: 13px;
+    height: 36px;
     box-sizing: border-box;
     color: #333;
     background: #fff;
@@ -1314,8 +1346,9 @@
     white-space: nowrap;
     transition: background-color 0.2s;
     border-radius: 9999px;
-    height: 40px;
-    min-width: 180px;
+    height: 36px;
+    padding: 0 32px;
+    min-width: 80px;
     width: auto;
 }
 
