@@ -1,0 +1,73 @@
+const fs = require('fs');
+const path = require('path');
+
+const watches = [{ "title": "MEN'S GOLD TONE STAINLESS STEEL DIGITAL WATCH A168WG CASIO-US", "price": "$24.69", "image": "https://i.ebayimg.com/images/g/xsYAAeSwDJFpUpA6/s-l500.webp", "condition": "New" }, { "title": "Tissot PRX 40mm Swiss Quartz Watch T137.410.11.091.01 Stainless Steel Green Dial", "price": "$221.80", "image": "https://i.ebayimg.com/images/g/khgAAeSwHtppICDl/s-l500.webp", "condition": "New" }, { "title": "Men Bulova Classic Marine Star Black Dial Chronograph 98B401 Quartz Watch 41.5mm", "price": "$139.00", "image": "https://i.ebayimg.com/images/g/i4cAAeSwe~lpT60T/s-l500.webp", "condition": "New" }, { "title": "TISSOT PRX 40MM STAINLESS STEEL BLUE DIAL MEN'S WATCH T137.410.11.041.00", "price": "$224.10", "image": "https://i.ebayimg.com/images/g/-QIAAeSwiehogLH1/s-l500.webp", "condition": "New" }, { "title": "New Bulova Marine Star Men's Quartz Watch Red Dial Chronograph 98B350 43mm", "price": "$159.00", "image": "https://i.ebayimg.com/images/g/nKwAAeSwKNRpCI4O/s-l500.webp", "condition": "New" }, { "title": "Guess Watches", "price": "$30.00", "image": "https://i.ebayimg.com/images/g/Fk0AAeSwMixpZaxQ/s-l500.webp", "condition": "New" }, { "title": "Men Tissot Classic PRX/316L Blue Stainless Steel Watch T137.410.11.041.00 (40mm)", "price": "$225.50", "image": "https://i.ebayimg.com/images/g/XPsAAOSwgSZm7WCj/s-l500.webp", "condition": "New" }, { "title": "Citizen Men's Automatic Luxury Small Seconds Silver Watch 40 MM NK5010-51X", "price": "$268.99", "image": "https://i.ebayimg.com/images/g/QpEAAOSwl7ZoHlGV/s-l500.webp", "condition": "New" }, { "title": "MEN'S GOLD TONE STAINLESS STEEL DIGITAL WATCH A168WG CASIO-US", "price": "$24.69", "image": "https://i.ebayimg.com/images/g/xsYAAeSwDJFpUpA6/s-l500.webp", "condition": "New" }, { "title": "TISSOT Gentleman T127.410.11.041.00 Quartz Blue Dial Men's Watch 40mm", "price": "$559.00", "image": "https://i.ebayimg.com/images/g/F7wAAOSwwaFn0FK3/s-l500.webp", "condition": "New" }, { "title": "Revue Thommen Men's Airspeed Blue Dial Chronograph Automatic Watch 16071.6825", "price": "$1,440.00", "image": "https://i.ebayimg.com/images/g/tFYAAOSwPSteWVBR/s-l500.webp", "condition": "New" }, { "title": "Men New Bulova Classic Blue Marine Star Stainless Steel 96B256 Watch (43MM)", "price": "$157.76", "image": "https://i.ebayimg.com/images/g/RjcAAOSwv1ZlpNo3/s-l500.webp", "condition": "New" }, { "title": "Men's Business Luminous Waterproof Date Quartz Wrist Watch Stainless Steel Band", "price": "$23.99", "image": "https://i.ebayimg.com/images/g/XfcAAOSwMmFn~08j/s-l500.webp", "condition": "New" }, { "title": "Mens Watch Easy Reader Date Leather Strap Watch Military Wrist Watch Canvas Band", "price": "$11.99", "image": "https://i.ebayimg.com/images/g/WUkAAOSwSXdgtGBl/s-l500.webp", "condition": "New" }, { "title": "Mens Rose Gold Bridge Manual Mechanical Watch - Orange Leather DIASTERIA 1688", "price": "$148.95", "image": "https://i.ebayimg.com/images/g/3V0AAOSwvXNeYpA9/s-l500.webp", "condition": "New" }, { "title": "Luxury Men's Stainless Steel Gold Tone Skeleton Automatic Mechanical Wrist Watch", "price": "$15.89", "image": "https://i.ebayimg.com/images/g/8lYAAeSwI1ZosB2w/s-l500.webp", "condition": "New" }, { "title": "Bulova Marine Star 96B255 White Dial Stainless Chronograph Men's Quartz Watch", "price": "$157.05", "image": "https://i.ebayimg.com/images/g/KQgAAeSwwkNozMCb/s-l500.webp", "condition": "New" }, { "title": "Bulova Marine Star 43MM Chronograph Blue Dial Men's Quartz Watch 96B256", "price": "$157.00", "image": "https://i.ebayimg.com/images/g/bmoAAeSwzltpRSaF/s-l500.webp", "condition": "New" }, { "title": "CURREN Men Watch Top Brand Men Military Sport Wristwatch Leather Quartz Watches", "price": "$25.21", "image": "https://i.ebayimg.com/images/g/esEAAOSwafdd06PW/s-l500.webp", "condition": "New" }, { "title": "Citizen Men's CA4500-08X Eco-Drive Chronograph \u2705 Stainless Steel \u2705 Quartz Watch.", "price": "$84.95", "image": "https://i.ebayimg.com/images/g/WX0AAeSwEDJpK4G2/s-l500.webp", "condition": "New" }, { "title": "Luxury Mens Watch Quartz Diver Sport Digital Analog 5ATM Waterproof Wristwatch", "price": "$23.59", "image": "https://i.ebayimg.com/images/g/JbkAAOSwGSRmxaAx/s-l500.webp", "condition": "New" }, { "title": "Rolex Tudor Princess Oysterdate Champagne Dial Two-Tone Ladies 18K Gold Watch", "price": "$3,200.00", "image": "https://i.ebayimg.com/images/g/l8MAAOSwc2dfdDWo/s-l500.webp", "condition": "New" }, { "title": "TISSOT TRADITION GENT SILVER DIAL ROSE GOLD MEN'S WATCH T063.610.33.038.00", "price": "$256.44", "image": "https://i.ebayimg.com/images/g/ktQAAeSwpwBpE9tM/s-l500.webp", "condition": "New" }, { "title": "TISSOT T137.410.11.051.00 PRX 40MM STAINLESS STEEL BLACK DIAL MEN'S WATCH", "price": "$256.44", "image": "https://i.ebayimg.com/images/g/-lcAAeSwKStpE9hK/s-l500.webp", "condition": "New" }, { "title": "New Tissot PRX Powermatic 80 Automatic Blue Men's Watch T1374071104100-", "price": "$151.82", "image": "https://i.ebayimg.com/images/g/HUQAAeSwng5pXHEz/s-l500.webp", "condition": "New" }, { "title": "Tissot PRX Green Dial Men's Quartz Watch Stainless Steel 40mm T137.410.11.091.00", "price": "$222.46", "image": "https://i.ebayimg.com/images/g/1MMAAeSwqGRpUShP/s-l500.webp", "condition": "New" }, { "title": "Waterproof Men Watch Stainless Steel Quartz Luminous Classic Business Wristwatch", "price": "$12.48", "image": "https://i.ebayimg.com/images/g/rcUAAOSwHgBjRhfZ/s-l500.webp", "condition": "New" }, { "title": "Waterproof Digital Sports Watch Military Tactical LED Backlight Wristwatch Men", "price": "$9.89", "image": "https://i.ebayimg.com/images/g/vLcAAOSwKRZk-6nV/s-l500.webp", "condition": "New" }, { "title": "Bulova Marine Star 98B258 Blue Silicone Strap Chronograph Men's Quartz Watch", "price": "$179.90", "image": "https://i.ebayimg.com/images/g/OngAAeSw7QVpO9fP/s-l500.webp", "condition": "New" }, { "title": "Bulova Men's Series C Date Indicator Hpq Precisionist Black Watch 43MM 96B431", "price": "$250.99", "image": "https://i.ebayimg.com/images/g/EiQAAeSwE7do0YSc/s-l500.webp", "condition": "New" }];
+
+const laptops = [{ "title": "HP Laptop 15.6\", Windows 11 Home, Intel® Core™ i5, 8GB RAM, 256GB S", "price": "$325.00", "image": "https://i.ebayimg.com/images/g/6J4AAeSw0U9pVacc/s-l500.webp", "condition": "Pre-Owned" }, { "title": "HP Mini 311-1037NR 11.6” Intel Atom N270 1.6GHz 1GB Ram NOHD/OS (FL)", "price": "$29.99", "image": "https://i.ebayimg.com/images/g/-foAAeSw0OpoinXz/s-l500.webp", "condition": "Parts Only" }, { "title": "Dell Latitude 14\" Laptop Computer Intel Up To 32GB RAM 1TB SSD Windows 11 Pro", "price": "$197.80", "image": "https://i.ebayimg.com/images/g/mvQAAeSw~eVpVUHM/s-l500.webp", "condition": "Genuine Windows 11 OS!" }, { "title": "Dell Latitude Laptop Computer PC Intel i7 Up To 32GB RAM 1TB SSD Windows 11", "price": "$263.73", "image": "https://i.ebayimg.com/images/g/L-wAAeSwATBpW-jQ/s-l500.webp", "condition": "Genuine Windows 11 OS!" }, { "title": "Dell Touchscreen Chromebook 3100 11.6\" Celeron 1.1GHz/4GB/32GB SSD - P30T001", "price": "$39.39", "image": "https://i.ebayimg.com/images/g/9boAAOSwa1hoNyFQ/s-l500.webp", "condition": "Pre-Owned" }, { "title": "Dell Latitude 3190 2-in-1 Touch Laptop Intel Pentium 8GB RAM 128GB SSD Win 11", "price": "$124.99", "image": "https://i.ebayimg.com/images/g/BHAAAeSwnu5pAvdL/s-l500.webp", "condition": "Good - Refurbished" }, { "title": "Lenovo Chromebook N21 11.6\" Intel N2840 @ 2.16GHz 4GB RAM 16GB with Charger", "price": "$34.99", "image": "https://i.ebayimg.com/images/g/SuwAAeSwHd1pWIVI/s-l500.webp", "condition": "Pre-Owned" }, { "title": "Acer Aspire AI 14\" Touch Laptop Intel Core Ultra 5 16GB RAM 1TB SSD Refurbished", "price": "$444.99", "image": "https://i.ebayimg.com/images/g/eOgAAeSw1aZpJNQ2/s-l500.webp", "condition": "Certified - Refurbished" }, { "title": "Acer Swift Go 14\" Laptop Intel Core Ultra 7 155H 16GB RAM 1TB SSD Refurbished", "price": "$371.99", "image": "https://i.ebayimg.com/images/g/m3YAAeSwJJZpOyMs/s-l500.webp", "condition": "Certified - Refurbished" }, { "title": "HP Touchscreen Laptop 11.6\" Intel Pentium Silver 4GB RAM 128GB SSD Windows 11", "price": "$125.30", "image": "https://i.ebayimg.com/images/g/Q0UAAeSwzg5pZde7/s-l500.webp", "condition": "Good - Refurbished" }, { "title": "Dell Latitude Touchscreen 2-in-1 Laptop Pentium 8GB RAM 128GB SSD Windows 11", "price": "$134.03", "image": "https://i.ebayimg.com/images/g/WhEAAeSwaZNot9lU/s-l500.webp", "condition": "Good - Refurbished" }, { "title": "Dell Latitude 5420 14\" Touch Laptop i5-1145G7 16GB RAM 256GB SSD Windows 11 Pro", "price": "$177.00", "image": "https://i.ebayimg.com/images/g/i64AAeSwh9JogXSn/s-l500.webp", "condition": "Pre-Owned" }, { "title": "Dell Latitude 5500 Laptop 15.6” FHD Core i7 16GB RAM 512GB SSD Windows 11 HDMI", "price": "$319.99", "image": "https://i.ebayimg.com/images/g/5G4AAeSwkthpX0pe/s-l500.webp", "condition": "Good - Refurbished" }, { "title": "Lenovo 11.6\" Multi-Touch 300e Chromebook (2nd Gen) - 82CE0000US - 4GB RAM", "price": "$64.99", "image": "https://i.ebayimg.com/images/g/teUAAOSwF1Zl9NbY/s-l500.webp", "condition": "Pre-Owned" }, { "title": "HP Pavilion 16-af0000nr 16\" Laptop Intel ultra 7 155U 16GB Ram NO HD/OS (FL)", "price": "$179.99", "image": "https://i.ebayimg.com/images/g/DqMAAeSwJmFpQCR~/s-l500.webp", "condition": "Parts Only" }, { "title": "Dell Latitude E7470 Laptop Intel i5-6300U 8GB RAM NO HD/OS (FL)", "price": "$29.99", "image": "https://i.ebayimg.com/images/g/bN4AAeSwqZdpF0Pk/s-l500.webp", "condition": "Parts Only" }, { "title": "Acer Aspire 3 Laptop 15.6\" Intel i5-1135G7 12GB RAM 512GB SSD 2.4GHz Refurbished", "price": "$232.49", "image": "https://i.ebayimg.com/images/g/ueMAAeSway5pJOJk/s-l500.webp", "condition": "Official Acer Recertified Store" }, { "title": "HP Chromebook 11 G7 11.6\" Intel 2.60 GHz 4 GB RAM 32 GB eMMC Bluetooth Webcam SD", "price": "$67.99", "image": "https://i.ebayimg.com/images/g/JIkAAeSwEZho62Kv/s-l500.webp", "condition": "New Year Sale !!" }, { "title": "Dell Latitude Laptop 11.6” HD 8GB RAM 128GB SSD Intel Pentium Silver Win 11 WiFi", "price": "$129.99", "image": "https://i.ebayimg.com/images/g/5P8AAeSw1PVpOp1s/s-l500.webp", "condition": "Good - Refurbished" }, { "title": "Dell Chromebook 3100 (11.6\", Intel Celeron, 4GB RAM, 16GB, ChromeOS) NO Charger", "price": "$25.99", "image": "https://i.ebayimg.com/images/g/te4AAeSw9pJoYIPI/s-l500.webp", "condition": "Pre-Owned" }, { "title": "HP EliteBook 845 G8 Laptop AMD Ryzen 5 PRO 5650U 16GB Memory 256 GB SSD 14.0\" FH", "price": "$244.99", "image": "https://i.ebayimg.com/images/g/~L4AAeSwRw5pQMFf/s-l500.webp", "condition": "Shop With Confidence" }, { "title": "~SALE~ HP ProBook Laptop PC: Intel i5 (16GB RAM - 1TB Storage) CD/DVD Burner!", "price": "$189.75", "image": "https://i.ebayimg.com/images/g/l3QAAeSwCQBpQa9J/s-l500.webp", "condition": "Intel i5! Windows 10!" }, { "title": "Lenovo LOQ 15.6\" FHD 144Hz AMD Ryzen 7 250 16GB RAM 512GB GeForce RTX 5060", "price": "$869.99", "image": "https://i.ebayimg.com/images/g/ILUAAeSwiWBpMmk5/s-l500.webp", "condition": "AI-Powered Gaming Notebook" }, { "title": "HP Stream 11 11-D010NR N2840 2.16GHz, 2GB Ram, 32GB SSD, Windows 10", "price": "$33.99", "image": "https://i.ebayimg.com/images/g/zAYAAeSwafFpXuCO/s-l500.webp", "condition": "Pre-Owned" }, { "title": "Dell Chromebook 3100 11.6\" Celeron N4000 1.1GHz, 4GB RAM, 16GB SSD", "price": "$41.00", "image": "https://i.ebayimg.com/images/g/agsAAOSwL7BnNPMK/s-l500.webp", "condition": "Pre-Owned" }, { "title": "Dell Latitude 3190 2-in-1 11.6\" Pentium N5030 8GB RAM 128GB SSD Windows 11 Pro", "price": "$84.95", "image": "https://i.ebayimg.com/images/g/H18AAeSwzfNpUuns/s-l500.webp", "condition": "Pre-Owned" }, { "title": "HP ProBook x360 11 G5 Laptop Celeron N4020 4GB 64GB 11.6\" Touch W11 Pro 2 in 1 !", "price": "$66.00", "image": "https://i.ebayimg.com/images/g/Y30AAeSw67lpGzhL/s-l500.webp", "condition": "FRONT FACING CAMERA" }, { "title": "HP 14 G4 Chromebook, 16GB SSD, 4GB RAM, WiFi, , 14inch screen FREE SHIPPING", "price": "$46.00", "image": "https://i.ebayimg.com/images/g/aGAAAOSwGwpglZLa/s-l500.webp", "condition": "Pre-Owned" }, { "title": "Acer Swift SF514-52 14\" laptop intel i7 8th gen 16gb ram no hdd", "price": "$29.99", "image": "https://i.ebayimg.com/images/g/eqsAAOSwzO5mx0Nb/s-l500.webp", "condition": "Parts Only" }, { "title": "Dell Latitude 14\" Laptop Computer Intel i7 Up To 32GB RAM 1TB SSD Windows 11 Pro", "price": "$314.38", "image": "https://i.ebayimg.com/images/g/eqwAAeSwFRZpVAJQ/s-l500.webp", "condition": "Genuine Windows 11 OS!" }];
+
+const formatItem = (item, id) => {
+    // Parse price
+    let price = parseFloat(item.price.replace(/[$,]/g, ''));
+    if (isNaN(price)) price = 99.99;
+
+    // Original price: ~20% markup
+    let originalPrice = price * 1.25;
+
+    return {
+        id: id,
+        title: item.title.replace(/"/g, '\\"'),
+        price: price,
+        originalPrice: originalPrice,
+        discount: "20% OFF",
+        image: item.image,
+        condition: item.condition || "Pre-Owned"
+    };
+};
+
+const main = () => {
+    const filePath = path.join(__dirname, '../data/ebayData.js');
+    let content = fs.readFileSync(filePath, 'utf8');
+
+    // Find where to insert (before the last closing bracket of the array)
+    // We search for `];` and hope it's unique enough or the last one before exports
+    // The file ends with footerLinks, so featuredProducts is the large array before it.
+
+    const insertionPoint = content.lastIndexOf('];');
+    if (insertionPoint === -1) {
+        console.error("Could not find insertion point");
+        return;
+    }
+
+    let newItems = [];
+    let currentId = 301;
+
+    watches.forEach(w => {
+        newItems.push(formatItem(w, currentId++));
+    });
+
+    currentId = 401;
+    laptops.forEach(l => {
+        newItems.push(formatItem(l, currentId++));
+    });
+
+    // Convert to JS object string but keep it pretty
+    const newContentString = newItems.map(item => {
+        return `    {
+        id: ${item.id},
+        title: "${item.title}",
+        price: ${item.price.toFixed(2)},
+        originalPrice: ${item.originalPrice.toFixed(2)},
+        discount: "${item.discount}",
+        image: "${item.image}",
+        condition: "${item.condition}"
+    }`;
+    }).join(',\n');
+
+    // Insert with a leading comma if the array wasn't empty
+    const updatedContent = content.slice(0, insertionPoint) + ',\n' + newContentString + '\n' + content.slice(insertionPoint);
+
+    fs.writeFileSync(filePath, updatedContent);
+    console.log("Successfully appended " + newItems.length + " items.");
+};
+
+main();

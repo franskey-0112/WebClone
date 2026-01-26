@@ -16,6 +16,13 @@ export default function Home() {
       description: '在线购物平台',
       color: '#FF9900',
       icon: '🛒'
+    },
+    {
+      name: 'eBay',
+      path: '/ebay',
+      description: '全球电子商务巨头',
+      color: '#E53238',
+      icon: '🛍️'
     }
   ];
 
