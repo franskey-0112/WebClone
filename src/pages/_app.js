@@ -1,4 +1,6 @@
+import '../styles/globals.css';
 import './bose/bose.css';
+import './youku/youku.css';
 import { CartProvider } from '../context/CartContext';
 
 // App component wrapper
