@@ -2,340 +2,936 @@ import React, { useState, useEffect } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import AmazonHeader from '../../components/amazon/AmazonHeader';
-import ProductCard from '../../components/amazon/ProductCard';
 import { 
-  FaFire, 
-  FaBolt,
-  FaTags,
-  FaGift,
-  FaShippingFast,
-  FaArrowRight
+  FaChevronLeft,
+  FaChevronRight
 } from 'react-icons/fa';
 import { 
   categories, 
-  products, 
-  getFeaturedDeals, 
-  getProductsByCategory 
+  products 
 } from '../../data/amazonData';
 
 const AmazonHomePage = () => {
-  const [featuredProducts, setFeaturedProducts] = useState([]);
-  const [dealProducts, setDealProducts] = useState([]);
   const [cartItems, setCartItems] = useState([]);
-  const [wishlistItems, setWishlistItems] = useState([]);
+  const [currentSlide, setCurrentSlide] = useState(0);
 
-  // 静态横幅数据 - 只显示一个主要横幅
-  const banner = {
+  // Hero banner slides
+  const heroSlides = [
+    {
     id: 1,
-    title: 'Welcome to Amazon',
-    subtitle: 'Discover millions of products with great deals',
-    image: '/images/amazon/banners/main-banner.jpg',
-    cta: 'Start Shopping',
-    link: '/amazon/category/electronics',
-    bgColor: 'bg-gradient-to-r from-blue-600 to-blue-800'
-  };
+      image: '/images/amazon/banners/electronics-sale.jpg',
+      alt: 'Shop Electronics',
+      bgColor: '#4a90a4'
+    },
+    {
+      id: 2,
+      image: '/images/amazon/banners/books-sale.jpg',
+      alt: 'Shop Books',
+      bgColor: '#a48d52'
+    },
+    {
+      id: 3,
+      image: '/images/amazon/banners/prime-day.jpg',
+      alt: 'Prime Day',
+      bgColor: '#2d5a7b'
+    }
+  ];
 
-  // 快捷分类
-  const quickCategories = [
-    { id: 'electronics', name: 'Electronics', icon: '📱', color: 'bg-blue-100 text-blue-800' },
-    { id: 'books', name: 'Books', icon: '📚', color: 'bg-green-100 text-green-800' },
-    { id: 'home-garden', name: 'Home & Garden', icon: '🏠', color: 'bg-orange-100 text-orange-800' },
-    { id: 'clothing', name: 'Fashion', icon: '👔', color: 'bg-purple-100 text-purple-800' },
-    { id: 'sports', name: 'Sports', icon: '⚽', color: 'bg-red-100 text-red-800' }
+  // Category cards data - matching Amazon homepage layout (使用唯一图片，无重复)
+  const categoryCards = [
+    {
+      title: 'Gaming accessories',
+      items: [
+        { name: 'Headsets', image: '/images/amazon/products/electronics/laptops/dell-xps-13-1.jpg', link: '/amazon/category/electronics?sub=gaming' },
+        { name: 'Keyboards', image: '/images/amazon/products/electronics/laptops/dell-xps-13-2.jpg', link: '/amazon/category/electronics?sub=gaming' },
+        { name: 'Computer mice', image: 'https://cdn.dummyjson.com/product-images/laptops/lenovo-yoga-920/1.webp', link: '/amazon/category/electronics?sub=gaming' },
+        { name: 'Chairs', image: 'https://cdn.dummyjson.com/product-images/laptops/huawei-matebook-x-pro/1.webp', link: '/amazon/category/electronics?sub=gaming' }
+      ],
+      link: '/amazon/category/electronics',
+      linkText: 'See more'
+    },
+    {
+      title: 'Shop home essentials',
+      items: [
+        { name: 'Cleaning Tools', image: 'https://cdn.dummyjson.com/product-images/kitchen-accessories/chopping-board/1.webp', link: '/amazon/category/home-garden' },
+        { name: 'Home Storage', image: 'https://cdn.dummyjson.com/product-images/kitchen-accessories/lunch-box/1.webp', link: '/amazon/category/home-garden' },
+        { name: 'Home Decor', image: 'https://cdn.dummyjson.com/product-images/kitchen-accessories/black-aluminium-cup/1.webp', link: '/amazon/category/home-garden' },
+        { name: 'Bedding', image: 'https://cdn.dummyjson.com/product-images/kitchen-accessories/glass/1.webp', link: '/amazon/category/home-garden' }
+      ],
+      link: '/amazon/category/home-garden',
+      linkText: 'Discover more in Home'
+    },
+    {
+      title: 'Kitchen & Dining',
+      items: [
+        { name: 'Blenders', image: 'https://cdn.dummyjson.com/product-images/kitchen-accessories/boxed-blender/1.webp', link: '/amazon/category/home-garden?sub=kitchen' },
+        { name: 'Cookware', image: 'https://cdn.dummyjson.com/product-images/kitchen-accessories/carbon-steel-wok/1.webp', link: '/amazon/category/home-garden?sub=kitchen' },
+        { name: 'Appliances', image: 'https://cdn.dummyjson.com/product-images/kitchen-accessories/microwave-oven/1.webp', link: '/amazon/category/home-garden?sub=kitchen' },
+        { name: 'Cutlery', image: 'https://cdn.dummyjson.com/product-images/kitchen-accessories/knife/1.webp', link: '/amazon/category/home-garden?sub=kitchen' }
+      ],
+      link: '/amazon/category/home-garden?sub=kitchen',
+      linkText: 'Shop Kitchen'
+    },
+    {
+      title: 'Deals in Electronics',
+      items: [
+        { name: 'Smartphones', image: '/images/amazon/products/electronics/smartphones/iphone-15-pro-1.jpg', link: '/amazon/category/electronics?sub=smartphones' },
+        { name: 'Laptops', image: '/images/amazon/products/electronics/laptops/macbook-air-m3-1.jpg', link: '/amazon/category/electronics?sub=laptops' },
+        { name: 'Tablets', image: '/images/amazon/products/electronics/laptops/Apple iPad Air.jpg', link: '/amazon/category/electronics?sub=tablets' },
+        { name: 'Accessories', image: '/images/amazon/accessories/charger.jpg', link: '/amazon/category/electronics?sub=accessories' }
+      ],
+    link: '/amazon/category/electronics',
+      linkText: 'See all deals'
+    }
+  ];
+
+  // Single image cards (使用唯一图片)
+  const singleCards = [
+    {
+      title: 'Get fit at home',
+      image: '/images/amazon/products/sports/outdoor-recreation/yeti-tumbler-1.jpg',
+      link: '/amazon/category/sports',
+      linkText: 'Explore now'
+    },
+    {
+      title: 'Top Rated Books',
+      image: '/images/amazon/products/books/non-fiction/atomic-habits-1.jpg',
+      link: '/amazon/category/books',
+      linkText: 'Shop now'
+    }
   ];
 
   useEffect(() => {
-    // 获取特色商品
-    const featured = products.slice(0, 8);
-    setFeaturedProducts(featured);
+    // Load cart from localStorage
+    try {
+      const savedCart = localStorage.getItem('amazon-cart');
+      if (savedCart) {
+        setCartItems(JSON.parse(savedCart));
+      }
+    } catch (error) {
+      console.error('Error loading cart:', error);
+    }
 
-    // 获取促销商品
-    const deals = products.filter(product => 
-      product.originalPrice && product.originalPrice > product.price
-    ).slice(0, 6);
-    setDealProducts(deals);
+    // Auto-slide hero banner
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
+    }, 5000);
 
-    // 不再自动轮播，保持显示第一个横幅
-    // const interval = setInterval(() => {
-    //   setCurrentBannerIndex((prev) => (prev + 1) % banners.length);
-    // }, 5000);
-
-    // return () => clearInterval(interval);
+    return () => clearInterval(interval);
   }, []);
 
-  // 处理添加到购物车
-  const handleAddToCart = (product) => {
-    try {
-      // 从localStorage获取当前购物车
-      const savedCart = localStorage.getItem('amazon-cart');
-      let currentCart = savedCart ? JSON.parse(savedCart) : [];
-      
-      // 检查商品是否已在购物车中
-      const existingItemIndex = currentCart.findIndex(item => item.id === product.id);
-      
-      if (existingItemIndex >= 0) {
-        // 如果商品已存在，增加数量
-        currentCart[existingItemIndex].quantity += 1;
-      } else {
-        // 如果商品不存在，添加新商品
-        const cartItem = {
-          id: product.id,
-          title: product.title,
-          price: product.price,
-          originalPrice: product.originalPrice,
-          quantity: 1,
-          image: product.images?.[0] || product.image,
-          inStock: product.inStock,
-          prime: product.delivery?.prime || product.prime || false,
-          selectedVariant: {},
-          seller: product.seller?.name || product.seller || 'Amazon.com'
-        };
-        currentCart.push(cartItem);
-      }
-      
-      // 保存到localStorage
-      localStorage.setItem('amazon-cart', JSON.stringify(currentCart));
-      
-      // 更新本地状态
-      setCartItems(currentCart);
-      
-      // 显示成功提示
-      alert(`${product.title} added to cart!`);
-    } catch (error) {
-      console.error('Error adding to cart:', error);
-      alert('Failed to add item to cart. Please try again.');
-    }
+  const nextSlide = () => {
+    setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
   };
 
-  // 处理愿望清单
-  const handleAddToWishlist = (product) => {
-    setWishlistItems(prev => {
-      const isInWishlist = prev.some(item => item.id === product.id);
-      if (isInWishlist) {
-        return prev.filter(item => item.id !== product.id);
-      } else {
-        return [...prev, product];
-      }
-    });
+  const prevSlide = () => {
+    setCurrentSlide((prev) => (prev - 1 + heroSlides.length) % heroSlides.length);
   };
 
-  // 检查商品是否在愿望清单中
-  const isInWishlist = (productId) => {
-    return wishlistItems.some(item => item.id === productId);
-  };
+  // Get best sellers
+  const bestSellers = products.slice(0, 20);
 
   return (
     <>
       <Head>
-        <title>Amazon.com: Online Shopping for Electronics, Apparel, Computers, Books, DVDs & more</title>
-        <meta name="description" content="Online shopping from a great selection at Amazon.com" />
+        <title>Amazon.com. Spend less. Smile more.</title>
+        <meta name="description" content="Free shipping on millions of items. Get the best of Shopping and Entertainment with Prime." />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <div className="min-h-screen bg-gray-100">
+      <div style={{ backgroundColor: '#eaeded', minHeight: '100vh' }}>
         {/* Header */}
-        <AmazonHeader cartItemCount={cartItems.reduce((total, item) => total + item.quantity, 0)} />
+        <AmazonHeader cartItemCount={cartItems.reduce((total, item) => total + (item.quantity || 1), 0)} />
 
         {/* Main Content */}
         <main>
-          {/* Hero Banner Section - 静态显示 */}
-          <section className="relative h-96 overflow-hidden">
-            <div className={`w-full h-full ${banner.bgColor}`}>
-              <div className="container mx-auto px-4 h-full flex items-center">
-                <div className="max-w-2xl text-white">
-                  <h1 className="text-5xl font-bold mb-4">{banner.title}</h1>
-                  <p className="text-xl mb-8">{banner.subtitle}</p>
+          {/* Hero Banner with Carousel */}
+          <div style={{ 
+            position: 'relative', 
+            height: '600px',
+            overflow: 'hidden'
+          }}>
+            {/* Background Image */}
+            <div style={{
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundColor: heroSlides[currentSlide].bgColor,
+              backgroundImage: `url(${heroSlides[currentSlide].image})`,
+              backgroundSize: 'cover',
+              backgroundPosition: 'center top',
+              transition: 'background-color 0.5s ease'
+            }} />
+
+            {/* Gradient Overlay */}
+            <div style={{
+              position: 'absolute',
+              bottom: 0,
+              left: 0,
+              right: 0,
+              height: '300px',
+              background: 'linear-gradient(to bottom, transparent, #eaeded)'
+            }} />
+
+            {/* Navigation Arrows */}
+            <button
+              onClick={prevSlide}
+              style={{
+                position: 'absolute',
+                left: 0,
+                top: '40%',
+                transform: 'translateY(-50%)',
+                background: 'rgba(255,255,255,0.8)',
+                border: 'none',
+                padding: '40px 18px',
+                cursor: 'pointer',
+                zIndex: 10,
+                borderRadius: '0 4px 4px 0'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,255,255,1)'}
+              onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.8)'}
+            >
+              <FaChevronLeft style={{ fontSize: '20px', color: '#484848' }} />
+            </button>
+
+            <button
+              onClick={nextSlide}
+              style={{
+                position: 'absolute',
+                right: 0,
+                top: '40%',
+                transform: 'translateY(-50%)',
+                background: 'rgba(255,255,255,0.8)',
+                border: 'none',
+                padding: '40px 18px',
+                cursor: 'pointer',
+                zIndex: 10,
+                borderRadius: '4px 0 0 4px'
+              }}
+              onMouseEnter={(e) => e.currentTarget.style.background = 'rgba(255,255,255,1)'}
+              onMouseLeave={(e) => e.currentTarget.style.background = 'rgba(255,255,255,0.8)'}
+            >
+              <FaChevronRight style={{ fontSize: '20px', color: '#484848' }} />
+            </button>
+          </div>
+
+          {/* Category Cards Grid - Overlapping Hero */}
+          <div style={{
+            position: 'relative',
+            marginTop: '-300px',
+            zIndex: 20,
+            padding: '0 20px 20px',
+            maxWidth: '1500px',
+            marginLeft: 'auto',
+            marginRight: 'auto'
+          }}>
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(4, 1fr)',
+              gap: '20px'
+            }} className="amazon-grid-responsive">
+              {/* Category Cards with 4 images */}
+              {categoryCards.map((card, index) => (
+                <div 
+                  key={index}
+                  style={{
+                    backgroundColor: 'white',
+                    padding: '20px',
+                    borderRadius: '4px',
+                    height: '420px',
+                    display: 'flex',
+                    flexDirection: 'column'
+                  }}
+                >
+                  <h2 style={{
+                    fontSize: '21px',
+                    fontWeight: 'bold',
+                    color: '#0f1111',
+                    marginBottom: '15px',
+                    lineHeight: '1.3'
+                  }}>
+                    {card.title}
+                  </h2>
+                  
+                  <div style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(2, 1fr)',
+                    gap: '10px',
+                    flex: 1
+                  }}>
+                    {card.items.map((item, itemIndex) => (
+                      <Link
+                        key={itemIndex}
+                        href={item.link}
+                        style={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          textDecoration: 'none'
+                        }}
+                      >
+                        <div style={{
+                          width: '100%',
+                          height: '120px',
+                          backgroundColor: '#f7f7f7',
+                          borderRadius: '4px',
+                          overflow: 'hidden'
+                        }}>
+                          <img
+                            src={item.image}
+                            alt={item.name}
+                            style={{
+                              width: '100%',
+                              height: '100%',
+                              objectFit: 'cover'
+                            }}
+                            onError={(e) => {
+                              e.target.style.display = 'none';
+                            }}
+                          />
+                        </div>
+                        <span style={{
+                          fontSize: '12px',
+                          color: '#0f1111',
+                          marginTop: '6px',
+                          lineHeight: '1.3'
+                        }}>
+                          {item.name}
+                        </span>
+                      </Link>
+                    ))}
+                  </div>
+
                   <Link
-                    href={banner.link}
-                    className="bg-orange-400 hover:bg-orange-500 text-gray-900 px-8 py-3 rounded-lg font-bold text-lg transition-colors inline-flex items-center"
-                    data-testid={`banner-cta-${banner.id}`}
+                    href={card.link}
+                    style={{
+                      fontSize: '13px',
+                      color: '#007185',
+                      textDecoration: 'none',
+                      marginTop: '12px'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.color = '#c7511f';
+                      e.currentTarget.style.textDecoration = 'underline';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.color = '#007185';
+                      e.currentTarget.style.textDecoration = 'none';
+                    }}
                   >
-                    {banner.cta}
-                    <FaArrowRight className="ml-2" />
+                    {card.linkText}
                   </Link>
                 </div>
-              </div>
-            </div>
-          </section>
+              ))}
 
-          {/* Quick Categories */}
-          <section className="py-8 bg-white">
-            <div className="container mx-auto px-4">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Shop by Category</h2>
-              <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-                {quickCategories.map(category => (
+              {/* Sign In Card */}
+              <div style={{
+                backgroundColor: 'white',
+                padding: '20px',
+                borderRadius: '4px',
+                display: 'flex',
+                flexDirection: 'column'
+              }}>
+                <h2 style={{
+                  fontSize: '21px',
+                  fontWeight: 'bold',
+                  color: '#0f1111',
+                  marginBottom: '10px'
+                }}>
+                  Sign in for the best experience
+                </h2>
+                <p style={{
+                  fontSize: '14px',
+                  color: '#0f1111',
+                  marginBottom: '15px'
+                }}>
+                  Sign in securely
+                </p>
+                <button
+                  style={{
+                    background: 'linear-gradient(to bottom, #f7dfa5, #f0c14b)',
+                    border: '1px solid #a88734',
+                    borderRadius: '3px',
+                    padding: '8px 16px',
+                    fontSize: '13px',
+                    cursor: 'pointer',
+                    width: '100%',
+                    marginBottom: '12px',
+                    color: '#0f1111',
+                    boxShadow: '0 1px 0 rgba(255,255,255,.6) inset'
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.background = 'linear-gradient(to bottom, #f5d78e, #eeb933)'}
+                  onMouseLeave={(e) => e.currentTarget.style.background = 'linear-gradient(to bottom, #f7dfa5, #f0c14b)'}
+                >
+                  Sign in securely
+                </button>
+                <p style={{
+                  fontSize: '12px',
+                  color: '#0f1111'
+                }}>
+                  New customer?{' '}
                   <Link
-                    key={category.id}
-                    href={`/amazon/category/${category.id}`}
-                    className={`${category.color} p-6 rounded-lg text-center hover:shadow-lg transition-shadow`}
-                    data-testid={`category-${category.id}`}
+                    href="/amazon/signin"
+                    style={{
+                      color: '#007185',
+                      textDecoration: 'none'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.color = '#c7511f';
+                      e.currentTarget.style.textDecoration = 'underline';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.color = '#007185';
+                      e.currentTarget.style.textDecoration = 'none';
+                    }}
                   >
-                    <div className="text-4xl mb-2">{category.icon}</div>
-                    <h3 className="font-semibold">{category.name}</h3>
+                    Start here
                   </Link>
+                </p>
+              </div>
+
+              {/* Single Image Cards */}
+              {singleCards.map((card, index) => (
+                <div 
+                  key={`single-${index}`}
+                  style={{
+                    backgroundColor: 'white',
+                    padding: '20px',
+                    borderRadius: '4px',
+                    display: 'flex',
+                    flexDirection: 'column'
+                  }}
+                >
+                  <h2 style={{
+                    fontSize: '21px',
+                    fontWeight: 'bold',
+                    color: '#0f1111',
+                    marginBottom: '15px'
+                  }}>
+                    {card.title}
+                  </h2>
+                  
+                  <Link href={card.link} style={{ flex: 1 }}>
+                    <div style={{
+                      width: '100%',
+                      height: '280px',
+                      backgroundColor: '#f7f7f7',
+                      borderRadius: '4px',
+                      overflow: 'hidden'
+                    }}>
+                      <img
+                        src={card.image}
+                        alt={card.title}
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          objectFit: 'cover'
+                        }}
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                        }}
+                      />
+            </div>
+                  </Link>
+
+                  <Link
+                    href={card.link}
+                    style={{
+                      fontSize: '13px',
+                      color: '#007185',
+                      textDecoration: 'none',
+                      marginTop: '12px'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.color = '#c7511f';
+                      e.currentTarget.style.textDecoration = 'underline';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.color = '#007185';
+                      e.currentTarget.style.textDecoration = 'none';
+                    }}
+                  >
+                    {card.linkText}
+                  </Link>
+                </div>
                 ))}
               </div>
             </div>
-          </section>
 
-          {/* Today's Deals */}
-          <section className="py-12 bg-gray-50">
-            <div className="container mx-auto px-4">
-              <div className="flex items-center justify-between mb-8">
-                <div className="flex items-center">
-                  <FaBolt className="text-yellow-500 text-2xl mr-3" />
-                  <h2 className="text-3xl font-bold text-gray-900">Today's Deals</h2>
+          {/* Best Sellers Section */}
+          <div style={{
+            backgroundColor: 'white',
+            margin: '20px',
+            padding: '20px',
+            borderRadius: '4px',
+            maxWidth: '1460px',
+            marginLeft: 'auto',
+            marginRight: 'auto'
+          }}>
+            <h2 style={{
+              fontSize: '21px',
+              fontWeight: 'bold',
+              color: '#0f1111',
+              marginBottom: '16px'
+            }}>
+              Best Sellers in Home, Kitchen & Garden
+            </h2>
+            
+            <div style={{
+              display: 'flex',
+              overflowX: 'auto',
+              gap: '12px',
+              paddingBottom: '10px'
+            }}>
+              {bestSellers.slice(0, 12).map((product) => (
+                <Link
+                  key={product.id}
+                  href={`/amazon/product/${product.id}`}
+                  style={{
+                    flex: '0 0 180px',
+                    textDecoration: 'none'
+                  }}
+                >
+                  <div style={{
+                    width: '180px',
+                    height: '180px',
+                    backgroundColor: '#f7f7f7',
+                    borderRadius: '4px',
+                    overflow: 'hidden',
+                    marginBottom: '8px'
+                  }}>
+                    <img
+                      src={product.images?.[0] || '/images/placeholder-product.jpg'}
+                      alt={product.title}
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'contain'
+                      }}
+                      onError={(e) => {
+                        e.target.src = '/images/placeholder-product.jpg';
+                      }}
+                    />
+                  </div>
+                </Link>
+                ))}
+              </div>
+            </div>
+
+          {/* More Product Sections */}
+          <div style={{
+            padding: '0 20px 40px',
+            maxWidth: '1500px',
+            marginLeft: 'auto',
+            marginRight: 'auto'
+          }}>
+            <div style={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(4, 1fr)',
+              gap: '20px'
+            }} className="amazon-grid-responsive">
+              {/* Kitchen Appliances */}
+              <div style={{
+                backgroundColor: 'white',
+                padding: '20px',
+                borderRadius: '4px'
+              }}>
+                <h2 style={{
+                  fontSize: '21px',
+                  fontWeight: 'bold',
+                  color: '#0f1111',
+                  marginBottom: '15px'
+                }}>
+                  Top categories in Kitchen
+                </h2>
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(2, 1fr)',
+                  gap: '10px'
+                }}>
+                  {['Cookers', 'Coffee', 'Pots & Pans', 'Kettles'].map((item, idx) => (
+                    <Link
+                      key={idx}
+                      href="/amazon/category/home-garden?sub=kitchen"
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        textDecoration: 'none'
+                      }}
+                    >
+                      <div style={{
+                        width: '100%',
+                        height: '100px',
+                        backgroundColor: '#f7f7f7',
+                        borderRadius: '4px'
+                      }} />
+                      <span style={{
+                        fontSize: '12px',
+                        color: '#0f1111',
+                        marginTop: '6px'
+                      }}>
+                        {item}
+                      </span>
+                    </Link>
+                  ))}
                 </div>
                 <Link
-                  href="/amazon/deals"
-                  className="text-blue-600 hover:text-blue-800 font-medium flex items-center"
+                  href="/amazon/category/home-garden"
+                  style={{
+                    fontSize: '13px',
+                    color: '#007185',
+                    textDecoration: 'none',
+                    display: 'block',
+                    marginTop: '12px'
+                  }}
                 >
-                  See all deals
-                  <FaArrowRight className="ml-2" />
+                  See all kitchen products
                 </Link>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {dealProducts.map(product => (
-                  <ProductCard
-                    key={product.id}
-                    product={product}
-                    layout="grid"
-                    onAddToCart={handleAddToCart}
-                    onAddToWishlist={handleAddToWishlist}
-                    isInWishlist={isInWishlist(product.id)}
+              {/* Fashion */}
+              <div style={{
+                backgroundColor: 'white',
+                padding: '20px',
+                borderRadius: '4px'
+              }}>
+                <h2 style={{
+                  fontSize: '21px',
+                  fontWeight: 'bold',
+                  color: '#0f1111',
+                  marginBottom: '15px'
+                }}>
+                  Explore clothing & shoes
+                </h2>
+                <Link href="/amazon/category/clothing" style={{ display: 'block' }}>
+                  <div style={{
+                    width: '100%',
+                    height: '260px',
+                    backgroundColor: '#f7f7f7',
+                    borderRadius: '4px',
+                    overflow: 'hidden'
+                  }}>
+                    <img
+                      src="/images/amazon/products/clothing/mens-clothing/levi-501-1.jpg"
+                      alt="Fashion"
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover'
+                      }}
+                      onError={(e) => {
+                        e.target.style.display = 'none';
+                      }}
                   />
-                ))}
               </div>
-            </div>
-          </section>
-
-          {/* Featured Products */}
-          <section className="py-12 bg-white">
-            <div className="container mx-auto px-4">
-              <div className="flex items-center justify-between mb-8">
-                <div className="flex items-center">
-                  <FaFire className="text-orange-500 text-2xl mr-3" />
-                  <h2 className="text-3xl font-bold text-gray-900">Featured Products</h2>
-                </div>
+                </Link>
                 <Link
-                  href="/amazon/search"
-                  className="text-blue-600 hover:text-blue-800 font-medium flex items-center"
+                  href="/amazon/category/clothing"
+                  style={{
+                    fontSize: '13px',
+                    color: '#007185',
+                    textDecoration: 'none',
+                    display: 'block',
+                    marginTop: '12px'
+                  }}
                 >
-                  Browse all products
-                  <FaArrowRight className="ml-2" />
+                  Shop now
                 </Link>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-                {featuredProducts.map(product => (
-                  <ProductCard
-                    key={product.id}
-                    product={product}
-                    layout="grid"
-                    onAddToCart={handleAddToCart}
-                    onAddToWishlist={handleAddToWishlist}
-                    isInWishlist={isInWishlist(product.id)}
-                  />
-                ))}
-              </div>
-            </div>
-          </section>
-
-          {/* Prime Benefits */}
-          <section className="py-12 bg-blue-600 text-white">
-            <div className="container mx-auto px-4">
-              <div className="text-center mb-8">
-                <h2 className="text-3xl font-bold mb-4">Join Amazon Prime</h2>
-                <p className="text-xl">Fast, FREE delivery and exclusive deals</p>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                <div className="text-center">
-                  <FaShippingFast className="text-4xl mx-auto mb-4" />
-                  <h3 className="text-xl font-semibold mb-2">Fast Delivery</h3>
-                  <p>FREE One-Day and Two-Day delivery on millions of items</p>
+              {/* Books */}
+              <div style={{
+                backgroundColor: 'white',
+                padding: '20px',
+                borderRadius: '4px'
+              }}>
+                <h2 style={{
+                  fontSize: '21px',
+                  fontWeight: 'bold',
+                  color: '#0f1111',
+                  marginBottom: '15px'
+                }}>
+                  Popular in Books
+                </h2>
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(2, 1fr)',
+                  gap: '10px'
+                }}>
+                  {['Fiction', 'Non-Fiction', "Children's", 'Textbooks'].map((item, idx) => (
+                    <Link
+                      key={idx}
+                      href="/amazon/category/books"
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'column',
+                        textDecoration: 'none'
+                      }}
+                    >
+                      <div style={{
+                        width: '100%',
+                        height: '100px',
+                        backgroundColor: '#f7f7f7',
+                        borderRadius: '4px',
+                        overflow: 'hidden'
+                      }}>
+                        <img
+                          src={idx % 2 === 0 ? '/images/amazon/products/books/fiction/fourth-wing-1.jpg' : '/images/amazon/products/books/non-fiction/atomic-habits-1.jpg'}
+                          alt={item}
+                          style={{
+                            width: '100%',
+                            height: '100%',
+                            objectFit: 'cover'
+                          }}
+                          onError={(e) => {
+                            e.target.style.display = 'none';
+                          }}
+                        />
                 </div>
-                <div className="text-center">
-                  <FaTags className="text-4xl mx-auto mb-4" />
-                  <h3 className="text-xl font-semibold mb-2">Exclusive Deals</h3>
-                  <p>Access to Prime Day and Lightning Deals before everyone else</p>
+                      <span style={{
+                        fontSize: '12px',
+                        color: '#0f1111',
+                        marginTop: '6px'
+                      }}>
+                        {item}
+                      </span>
+                    </Link>
+                  ))}
                 </div>
-                <div className="text-center">
-                  <FaGift className="text-4xl mx-auto mb-4" />
-                  <h3 className="text-xl font-semibold mb-2">More Benefits</h3>
-                  <p>Prime Video, Prime Music, and unlimited photo storage</p>
-                </div>
-              </div>
-
-              <div className="text-center mt-8">
                 <Link
-                  href="/amazon/prime"
-                  className="bg-orange-400 hover:bg-orange-500 text-gray-900 px-8 py-3 rounded-lg font-bold text-lg transition-colors inline-block"
-                  data-testid="join-prime-button"
+                  href="/amazon/category/books"
+                  style={{
+                    fontSize: '13px',
+                    color: '#007185',
+                    textDecoration: 'none',
+                    display: 'block',
+                    marginTop: '12px'
+                  }}
                 >
-                  Try Prime FREE for 30 days
+                  Explore all books
+                </Link>
+              </div>
+
+              {/* Sports */}
+              <div style={{
+                backgroundColor: 'white',
+                padding: '20px',
+                borderRadius: '4px'
+              }}>
+                <h2 style={{
+                  fontSize: '21px',
+                  fontWeight: 'bold',
+                  color: '#0f1111',
+                  marginBottom: '15px'
+                }}>
+                  Sports & Outdoors
+                </h2>
+                <Link href="/amazon/category/sports" style={{ display: 'block' }}>
+                  <div style={{
+                    width: '100%',
+                    height: '260px',
+                    backgroundColor: '#f7f7f7',
+                    borderRadius: '4px',
+                    overflow: 'hidden'
+                  }}>
+                    <img
+                      src="/images/amazon/products/sports/outdoor-recreation/yeti-tumbler-1.jpg"
+                      alt="Sports"
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: 'cover'
+                      }}
+                      onError={(e) => {
+                        e.target.style.display = 'none';
+                      }}
+                    />
+                  </div>
+                </Link>
+                <Link
+                  href="/amazon/category/sports"
+                  style={{
+                    fontSize: '13px',
+                    color: '#007185',
+                    textDecoration: 'none',
+                    display: 'block',
+                    marginTop: '12px'
+                  }}
+                >
+                  Explore now
                 </Link>
               </div>
             </div>
-          </section>
+          </div>
         </main>
 
         {/* Footer */}
-        <footer className="bg-gray-900 text-white py-12">
-          <div className="container mx-auto px-4">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <footer>
+          {/* Back to Top */}
+          <button
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+            style={{
+              width: '100%',
+              backgroundColor: '#37475a',
+              color: 'white',
+              border: 'none',
+              padding: '15px',
+              fontSize: '13px',
+              cursor: 'pointer'
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.backgroundColor = '#485769'}
+            onMouseLeave={(e) => e.currentTarget.style.backgroundColor = '#37475a'}
+          >
+            Back to top
+          </button>
+
+          {/* Footer Links */}
+          <div style={{
+            backgroundColor: '#232f3e',
+            padding: '40px 20px'
+          }}>
+            <div style={{
+              maxWidth: '1000px',
+              margin: '0 auto',
+              display: 'grid',
+              gridTemplateColumns: 'repeat(4, 1fr)',
+              gap: '40px'
+            }} className="footer-grid-responsive">
               <div>
-                <h3 className="font-bold text-lg mb-4">Get to Know Us</h3>
-                <ul className="space-y-2">
-                  <li><a href="#" className="text-gray-300 hover:text-white">Careers</a></li>
-                  <li><a href="#" className="text-gray-300 hover:text-white">Blog</a></li>
-                  <li><a href="#" className="text-gray-300 hover:text-white">About Amazon</a></li>
-                  <li><a href="#" className="text-gray-300 hover:text-white">Investor Relations</a></li>
+                <h3 style={{ color: 'white', fontSize: '16px', fontWeight: 'bold', marginBottom: '12px' }}>
+                  Get to Know Us
+                </h3>
+                <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                  {[
+                    { label: 'Careers', href: '/careerlink/jobs' },
+                    { label: 'Blog', href: '/amazon' },
+                    { label: 'About Amazon', href: '/amazon' },
+                    { label: 'Investor Relations', href: '/amazon' },
+                    { label: 'Amazon Devices', href: '/amazon/category/electronics' },
+                    { label: 'Amazon Science', href: '/amazon' }
+                  ].map((item, idx) => (
+                    <li key={idx} style={{ marginBottom: '8px' }}>
+                      <a href={item.href} style={{ color: '#ddd', fontSize: '14px', textDecoration: 'none' }}>
+                        {item.label}
+                      </a>
+                    </li>
+                  ))}
                 </ul>
               </div>
+              
               <div>
-                <h3 className="font-bold text-lg mb-4">Make Money with Us</h3>
-                <ul className="space-y-2">
-                  <li><a href="#" className="text-gray-300 hover:text-white">Sell products on Amazon</a></li>
-                  <li><a href="#" className="text-gray-300 hover:text-white">Sell on Amazon Business</a></li>
-                  <li><a href="#" className="text-gray-300 hover:text-white">Sell apps on Amazon</a></li>
-                  <li><a href="#" className="text-gray-300 hover:text-white">Become an Affiliate</a></li>
+                <h3 style={{ color: 'white', fontSize: '16px', fontWeight: 'bold', marginBottom: '12px' }}>
+                  Make Money with Us
+                </h3>
+                <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                  {['Sell products on Amazon', 'Sell on Amazon Business', 'Sell apps on Amazon', 'Become an Affiliate', 'Advertise Your Products', 'Self-Publish with Us'].map((item, idx) => (
+                    <li key={idx} style={{ marginBottom: '8px' }}>
+                      <a href="/amazon/sell" style={{ color: '#ddd', fontSize: '14px', textDecoration: 'none' }}>
+                        {item}
+                      </a>
+                    </li>
+                  ))}
                 </ul>
               </div>
+
               <div>
-                <h3 className="font-bold text-lg mb-4">Amazon Payment Products</h3>
-                <ul className="space-y-2">
-                  <li><a href="#" className="text-gray-300 hover:text-white">Amazon Business Card</a></li>
-                  <li><a href="#" className="text-gray-300 hover:text-white">Shop with Points</a></li>
-                  <li><a href="#" className="text-gray-300 hover:text-white">Reload Your Balance</a></li>
-                  <li><a href="#" className="text-gray-300 hover:text-white">Amazon Currency Converter</a></li>
+                <h3 style={{ color: 'white', fontSize: '16px', fontWeight: 'bold', marginBottom: '12px' }}>
+                  Amazon Payment Products
+                </h3>
+                <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                  {['Amazon Business Card', 'Shop with Points', 'Reload Your Balance', 'Amazon Currency Converter'].map((item, idx) => (
+                    <li key={idx} style={{ marginBottom: '8px' }}>
+                      <a href="/amazon/gift-cards" style={{ color: '#ddd', fontSize: '14px', textDecoration: 'none' }}>
+                        {item}
+                      </a>
+                    </li>
+                  ))}
                 </ul>
               </div>
+
               <div>
-                <h3 className="font-bold text-lg mb-4">Let Us Help You</h3>
-                <ul className="space-y-2">
-                  <li><a href="#" className="text-gray-300 hover:text-white">Amazon and COVID-19</a></li>
-                  <li><a href="#" className="text-gray-300 hover:text-white">Your Account</a></li>
-                  <li><a href="#" className="text-gray-300 hover:text-white">Your Orders</a></li>
-                  <li><a href="#" className="text-gray-300 hover:text-white">Shipping Rates & Policies</a></li>
+                <h3 style={{ color: 'white', fontSize: '16px', fontWeight: 'bold', marginBottom: '12px' }}>
+                  Let Us Help You
+                </h3>
+                <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
+                  {[
+                    { label: 'Amazon and COVID-19', href: '/amazon/customer-service' },
+                    { label: 'Your Account', href: '/amazon/account' },
+                    { label: 'Your Orders', href: '/amazon/orders' },
+                    { label: 'Shipping Rates & Policies', href: '/amazon/customer-service' },
+                    { label: 'Returns & Replacements', href: '/amazon/customer-service' },
+                    { label: 'Help', href: '/amazon/customer-service' }
+                  ].map((item, idx) => (
+                    <li key={idx} style={{ marginBottom: '8px' }}>
+                      <a href={item.href} style={{ color: '#ddd', fontSize: '14px', textDecoration: 'none' }}>
+                        {item.label}
+                      </a>
+                    </li>
+                  ))}
                 </ul>
+              </div>
               </div>
             </div>
 
-            <hr className="border-gray-700 my-8" />
-
-            <div className="text-center">
-              <div className="text-2xl font-bold mb-4">
-                amazon<span className="text-orange-400">.com</span>
+          {/* Footer Bottom */}
+          <div style={{
+            backgroundColor: '#131921',
+            padding: '30px 20px',
+            textAlign: 'center'
+          }}>
+            <div style={{
+              fontSize: '24px',
+              fontWeight: 'bold',
+              color: 'white',
+              marginBottom: '16px'
+            }}>
+              amazon<span style={{ color: '#ff9900' }}>.com</span>
               </div>
-              <p className="text-gray-400">
-                © 2024 Amazon.com, Inc. or its affiliates. This is a demo site for evaluation purposes.
-              </p>
+            <div style={{
+              display: 'flex',
+              justifyContent: 'center',
+              flexWrap: 'wrap',
+              gap: '16px',
+              marginBottom: '16px'
+            }}>
+              {['Conditions of Use', 'Privacy Notice', 'Consumer Health Data Privacy Disclosure', 'Your Ads Privacy Choices'].map((item, idx) => (
+                <a key={idx} href="/amazon/customer-service" style={{ color: '#ddd', fontSize: '12px', textDecoration: 'none' }}>
+                  {item}
+                </a>
+              ))}
             </div>
+            <p style={{ color: '#999', fontSize: '12px' }}>
+              © 1996-2024, Amazon.com, Inc. or its affiliates
+            </p>
           </div>
         </footer>
       </div>
+
+      <style jsx global>{`
+        @media (max-width: 1200px) {
+          .amazon-grid-responsive {
+            grid-template-columns: repeat(3, 1fr) !important;
+          }
+          .footer-grid-responsive {
+            grid-template-columns: repeat(2, 1fr) !important;
+          }
+        }
+        @media (max-width: 900px) {
+          .amazon-grid-responsive {
+            grid-template-columns: repeat(2, 1fr) !important;
+          }
+        }
+        @media (max-width: 600px) {
+          .amazon-grid-responsive {
+            grid-template-columns: 1fr !important;
+          }
+          .footer-grid-responsive {
+            grid-template-columns: 1fr !important;
+          }
+        }
+      `}</style>
     </>
   );
 };

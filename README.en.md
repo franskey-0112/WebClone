@@ -1,6 +1,6 @@
 # WebClone
 
-[中文](./README.md) | [English](./README.en.md)
+[中文](./README.zh-CN.md) | [English](./README.md)
 
 🌐 **Offline Web Agent Evaluation Environment (10-site suite)**  
 A controllable and reproducible multi-website clone suite for standardized AI agent evaluation, regression testing, and trajectory collection.

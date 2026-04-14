@@ -1,48 +1,38 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { 
   FaStar, 
   FaStarHalfAlt, 
   FaRegStar, 
-  FaShippingFast, 
-  FaShoppingCart,
-  FaHeart,
-  FaRegHeart,
-  FaChevronDown,
-  FaChevronUp
+  FaCheck
 } from 'react-icons/fa';
+import { getPicsumImage } from '../../utils/imageHelper';
 
 const ProductCard = ({ 
   product, 
   layout = 'grid', // 'grid' or 'list'
   onAddToCart,
-  onAddToWishlist,
-  isInWishlist = false,
-  showComparison = false,
+  showQuickView = false,
   className = ''
 }) => {
   const [imageError, setImageError] = useState(false);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [showMoreFeatures, setShowMoreFeatures] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
 
-  // 渲染星级评分
+  // 渲染星级评分 - Amazon 风格
   const renderRating = (rating) => {
     const stars = [];
     const fullStars = Math.floor(rating);
-    const hasHalfStar = rating % 1 !== 0;
-    const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
+    const hasHalfStar = rating % 1 >= 0.3 && rating % 1 <= 0.7;
+    const almostFull = rating % 1 > 0.7;
 
-    for (let i = 0; i < fullStars; i++) {
-      stars.push(<FaStar key={`full-${i}`} className="text-yellow-400" />);
-    }
-    
-    if (hasHalfStar) {
-      stars.push(<FaStarHalfAlt key="half" className="text-yellow-400" />);
-    }
-    
-    for (let i = 0; i < emptyStars; i++) {
-      stars.push(<FaRegStar key={`empty-${i}`} className="text-gray-300" />);
+    for (let i = 0; i < 5; i++) {
+      if (i < fullStars || (i === fullStars && almostFull)) {
+        stars.push(<FaStar key={i} />);
+      } else if (i === fullStars && hasHalfStar) {
+        stars.push(<FaStarHalfAlt key={i} />);
+      } else {
+        stars.push(<FaRegStar key={i} />);
+      }
     }
 
     return stars;
@@ -53,341 +43,543 @@ const ProductCard = ({
     ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
     : 0;
 
+  // 分离价格的整数和小数部分
+  const priceWhole = Math.floor(product.price);
+  const priceFraction = Math.round((product.price % 1) * 100).toString().padStart(2, '0');
+
   // 处理添加到购物车
   const handleAddToCart = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    if (onAddToCart) {
+    if (onAddToCart && product.inStock) {
       onAddToCart(product);
     }
   };
 
-  // 处理愿望清单
-  const handleWishlistToggle = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    if (onAddToWishlist) {
-      onAddToWishlist(product);
-    }
-  };
-
-  // Grid布局
+  // Grid布局 - Amazon 风格
   if (layout === 'grid') {
     return (
-      <div className={`bg-white border border-gray-200 rounded-lg p-4 hover:shadow-lg transition-shadow duration-200 ${className}`}>
-        <Link href={`/amazon/product/${product.id}`} className="block" data-testid={`product-link-${product.id}`}>
-          {/* 商品图片 */}
-          <div className="relative mb-4 group">
-            <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden relative">
-              {!imageError ? (
-                <img
-                  src={product.images?.[currentImageIndex] || '/images/placeholder-product.jpg'}
-                  alt={product.title}
-                  className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-200"
-                  onError={() => setImageError(true)}
-                />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center text-gray-400">
-                  No Image
+      <div 
+        className={className}
+        style={{
+          backgroundColor: 'white',
+          padding: '14px',
+          borderRadius: '4px',
+          position: 'relative',
+          transition: 'box-shadow 0.2s',
+          boxShadow: isHovered ? '0 0 0 1px rgba(0,0,0,0.1), 0 2px 8px rgba(0,0,0,0.1)' : 'none'
+        }}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
+        <Link 
+          href={`/amazon/product/${product.id}`} 
+          style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}
+          data-testid={`product-link-${product.id}`}
+        >
+          {/* Deal Badge */}
+          {discountPercent >= 10 && (
+            <div style={{
+              position: 'absolute',
+              top: '8px',
+              left: '8px',
+              backgroundColor: '#cc0c39',
+              color: 'white',
+              padding: '4px 8px',
+              fontSize: '12px',
+              fontWeight: 'bold',
+              borderRadius: '2px',
+              zIndex: 1
+            }}>
+              {discountPercent}% off
                 </div>
               )}
               
-              {/* 折扣标签 */}
-              {discountPercent > 0 && (
-                <div className="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 text-xs font-bold rounded">
-                  -{discountPercent}%
+          {/* Product Image */}
+          <div style={{
+            position: 'relative',
+            paddingTop: '100%',
+            marginBottom: '12px',
+            backgroundColor: '#f7f7f7',
+            borderRadius: '4px',
+            overflow: 'hidden'
+          }}>
+            <img
+              src={!imageError 
+                ? (product.images?.[0] || getPicsumImage(product.id, 400, 400))
+                : getPicsumImage(product.id, 400, 400)
+              }
+              alt={product.title}
+              style={{
+                position: 'absolute',
+                top: 0,
+                left: 0,
+                width: '100%',
+                height: '100%',
+                objectFit: 'contain',
+                padding: '10px'
+              }}
+              onError={(e) => {
+                if (!imageError) {
+                  setImageError(true);
+                  e.target.src = getPicsumImage(product.id, 400, 400);
+                }
+              }}
+            />
+          </div>
+
+          {/* Product Title */}
+          <h3 style={{
+            fontSize: '14px',
+            lineHeight: '1.4',
+            color: '#0f1111',
+            marginBottom: '4px',
+            display: '-webkit-box',
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: 'vertical',
+            overflow: 'hidden',
+            fontWeight: 400
+          }}>
+            {product.title}
+          </h3>
+
+          {/* Rating */}
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            marginBottom: '4px'
+          }}>
+            <div style={{
+              display: 'flex',
+              color: '#de7921',
+              fontSize: '14px',
+              marginRight: '4px'
+            }}>
+              {renderRating(product.rating)}
+            </div>
+            <span style={{
+              fontSize: '12px',
+              color: '#007185'
+            }}>
+              {product.reviewCount?.toLocaleString()}
+            </span>
+                </div>
+
+          {/* Bought count */}
+          {product.reviewCount > 1000 && (
+            <div style={{
+              fontSize: '12px',
+              color: '#565959',
+              marginBottom: '4px'
+            }}>
+              {product.reviewCount > 10000 ? '10K+' : `${Math.floor(product.reviewCount / 1000)}K+`} bought in past month
                 </div>
               )}
 
-              {/* Prime标签 */}
-              {product.delivery?.prime && (
-                <div className="absolute top-2 right-2 bg-blue-500 text-white px-2 py-1 text-xs font-bold rounded">
-                  Prime
-                </div>
-              )}
-
-              {/* 愿望清单按钮 */}
-              <button
-                onClick={handleWishlistToggle}
-                className="absolute bottom-2 right-2 p-2 bg-white rounded-full shadow-md hover:shadow-lg transition-shadow"
-                title={isInWishlist ? "Remove from wishlist" : "Add to wishlist"}
-              >
-                {isInWishlist ? (
-                  <FaHeart className="text-red-500" />
-                ) : (
-                  <FaRegHeart className="text-gray-600" />
-                )}
-              </button>
+          {/* Price */}
+          <div style={{ marginBottom: '8px' }}>
+            {/* Current Price */}
+            <div style={{
+              display: 'flex',
+              alignItems: 'flex-start'
+            }}>
+              <span style={{
+                fontSize: '13px',
+                color: '#0f1111',
+                position: 'relative',
+                top: '2px'
+              }}>$</span>
+              <span style={{
+                fontSize: '28px',
+                fontWeight: 400,
+                color: '#0f1111',
+                lineHeight: 1
+              }}>{priceWhole}</span>
+              <span style={{
+                fontSize: '13px',
+                color: '#0f1111',
+                position: 'relative',
+                top: '2px'
+              }}>{priceFraction}</span>
             </div>
 
-            {/* 图片导航点 */}
-            {product.images && product.images.length > 1 && (
-              <div className="flex justify-center mt-2 space-x-1">
-                {product.images.map((_, index) => (
-                  <button
-                    key={index}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      setCurrentImageIndex(index);
-                    }}
-                    className={`w-2 h-2 rounded-full ${
-                      index === currentImageIndex ? 'bg-orange-400' : 'bg-gray-300'
-                    }`}
-                  />
-                ))}
+            {/* Original Price */}
+            {product.originalPrice && product.originalPrice > product.price && (
+              <div style={{
+                fontSize: '12px',
+                color: '#565959'
+              }}>
+                List: <span style={{ textDecoration: 'line-through' }}>${product.originalPrice.toFixed(2)}</span>
               </div>
             )}
           </div>
 
-          {/* 商品信息 */}
-          <div className="space-y-2">
-            {/* 品牌 */}
-            {product.brand && (
-              <div className="text-sm text-gray-600">{product.brand}</div>
-            )}
+          {/* Prime / Delivery */}
+          {product.delivery?.prime && (
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              fontSize: '12px',
+              color: '#565959',
+              marginBottom: '4px'
+            }}>
+              <span style={{
+                color: '#1b94c2',
+                fontWeight: 'bold',
+                fontStyle: 'italic',
+                marginRight: '4px'
+              }}>prime</span>
+            </div>
+          )}
 
-            {/* 标题 */}
-            <h3 className="text-sm font-medium text-gray-900 line-clamp-2 leading-4">
-              {product.title}
-            </h3>
-
-            {/* 评分 */}
-            <div className="flex items-center space-x-2">
-              <div className="flex items-center">
-                {renderRating(product.rating)}
-              </div>
-              <span className="text-sm text-gray-600">
-                ({product.reviewCount?.toLocaleString()})
+          {/* Free Delivery */}
+          {product.delivery?.freeShipping && (
+            <div style={{
+              fontSize: '12px',
+              color: '#0f1111'
+            }}>
+              FREE delivery <span style={{ fontWeight: 'bold' }}>
+                {product.delivery?.prime ? 'Tomorrow' : `in ${product.delivery?.estimatedDays || 3}-${(product.delivery?.estimatedDays || 3) + 2} days`}
               </span>
             </div>
+          )}
 
-            {/* 价格 */}
-            <div className="space-y-1">
-              <div className="flex items-center space-x-2">
-                <span className="text-lg font-bold text-gray-900">
-                  ${product.price.toFixed(2)}
-                </span>
-                {product.originalPrice && product.originalPrice > product.price && (
-                  <span className="text-sm text-gray-500 line-through">
-                    ${product.originalPrice.toFixed(2)}
-                  </span>
-                )}
+          {/* In Stock */}
+          {product.inStock ? (
+            product.stockCount && product.stockCount <= 10 ? (
+              <div style={{
+                fontSize: '12px',
+                color: '#cc0c39',
+                marginTop: '4px'
+              }}>
+                Only {product.stockCount} left in stock - order soon.
               </div>
-            </div>
-
-            {/* 配送信息 */}
-            {product.delivery && (
-              <div className="text-sm text-gray-600">
-                {product.delivery.freeShipping && (
-                  <div className="flex items-center">
-                    <FaShippingFast className="mr-1 text-green-600" />
-                    FREE delivery {product.delivery.prime ? 'tomorrow' : `in ${product.delivery.estimatedDays} days`}
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* 库存状态 */}
-            {product.inStock ? (
-              product.stockCount <= 10 && (
-                <div className="text-sm text-orange-600">
-                  Only {product.stockCount} left in stock
+            ) : (
+              <div style={{
+                fontSize: '12px',
+                color: '#007600',
+                marginTop: '4px',
+                display: 'flex',
+                alignItems: 'center'
+              }}>
+                <FaCheck style={{ marginRight: '4px', fontSize: '10px' }} />
+                In Stock
                 </div>
               )
             ) : (
-              <div className="text-sm text-red-600">Currently unavailable</div>
+            <div style={{
+              fontSize: '12px',
+              color: '#cc0c39',
+              marginTop: '4px'
+            }}>
+              Currently unavailable
+            </div>
             )}
-          </div>
         </Link>
 
-        {/* 操作按钮 */}
-        <div className="mt-4 space-y-2">
+        {/* Add to Cart Button - shows on hover */}
+        {isHovered && product.inStock && (
           <button
             onClick={handleAddToCart}
-            disabled={!product.inStock}
-            className={`w-full py-2 px-4 rounded-lg font-medium transition-colors ${
-              product.inStock
-                ? 'bg-orange-400 hover:bg-orange-500 text-gray-900'
-                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-            }`}
+            style={{
+              marginTop: '12px',
+              width: '100%',
+              background: 'linear-gradient(to bottom, #f7dfa5, #f0c14b)',
+              border: '1px solid #a88734',
+              borderRadius: '20px',
+              padding: '8px 16px',
+              fontSize: '13px',
+              cursor: 'pointer',
+              color: '#0f1111',
+              boxShadow: '0 1px 0 rgba(255,255,255,.6) inset'
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.background = 'linear-gradient(to bottom, #f5d78e, #eeb933)'}
+            onMouseLeave={(e) => e.currentTarget.style.background = 'linear-gradient(to bottom, #f7dfa5, #f0c14b)'}
             data-testid={`add-to-cart-${product.id}`}
           >
-            <FaShoppingCart className="inline mr-2" />
             Add to Cart
           </button>
-        </div>
+        )}
       </div>
     );
   }
 
-  // List布局
+  // List布局 - Amazon 搜索结果风格
   return (
-    <div className={`bg-white border border-gray-200 rounded-lg p-4 hover:shadow-lg transition-shadow duration-200 ${className}`}>
-      <Link href={`/amazon/product/${product.id}`} className="flex space-x-4" data-testid={`product-link-${product.id}`}>
-        {/* 商品图片 */}
-        <div className="flex-shrink-0 w-48">
-          <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden relative">
-            {!imageError ? (
-              <img
-                src={product.images?.[0] || '/images/placeholder-product.jpg'}
+    <div 
+      className={className}
+      style={{
+        backgroundColor: 'white',
+        padding: '16px',
+        borderBottom: '1px solid #ddd',
+        display: 'flex',
+        gap: '16px'
+      }}
+    >
+      <Link 
+        href={`/amazon/product/${product.id}`}
+        style={{ flexShrink: 0 }}
+        data-testid={`product-link-${product.id}`}
+      >
+        {/* Product Image */}
+        <div style={{
+          width: '200px',
+          height: '200px',
+          backgroundColor: '#f7f7f7',
+          borderRadius: '4px',
+          overflow: 'hidden',
+          position: 'relative'
+        }}>
+          <img
+            src={!imageError 
+              ? (product.images?.[0] || getPicsumImage(product.id, 400, 400))
+              : getPicsumImage(product.id, 400, 400)
+            }
                 alt={product.title}
-                className="w-full h-full object-contain"
-                onError={() => setImageError(true)}
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center text-gray-400">
-                No Image
-              </div>
-            )}
-            
-            {/* 折扣标签 */}
-            {discountPercent > 0 && (
-              <div className="absolute top-2 left-2 bg-red-500 text-white px-2 py-1 text-xs font-bold rounded">
-                -{discountPercent}%
-              </div>
-            )}
-          </div>
-        </div>
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'contain',
+              padding: '10px'
+            }}
+            onError={(e) => {
+              if (!imageError) {
+                setImageError(true);
+                e.target.src = getPicsumImage(product.id, 400, 400);
+              }
+            }}
+          />
 
-        {/* 商品信息 */}
-        <div className="flex-1 space-y-2">
-          {/* 品牌和标题 */}
-          <div>
-            {product.brand && (
-              <div className="text-sm text-gray-600 mb-1">{product.brand}</div>
+          {/* Deal Badge */}
+          {discountPercent >= 10 && (
+            <div style={{
+              position: 'absolute',
+              top: '8px',
+              left: '8px',
+              backgroundColor: '#cc0c39',
+              color: 'white',
+              padding: '4px 8px',
+              fontSize: '12px',
+              fontWeight: 'bold',
+              borderRadius: '2px'
+            }}>
+              {discountPercent}% off
+              </div>
             )}
-            <h3 className="text-lg font-medium text-gray-900 line-clamp-2">
+        </div>
+      </Link>
+
+      {/* Product Info */}
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <Link 
+          href={`/amazon/product/${product.id}`}
+          style={{ textDecoration: 'none' }}
+        >
+          {/* Title */}
+          <h3 style={{
+            fontSize: '16px',
+            lineHeight: '1.4',
+            color: '#0f1111',
+            marginBottom: '4px',
+            fontWeight: 400,
+            display: '-webkit-box',
+            WebkitLineClamp: 2,
+            WebkitBoxOrient: 'vertical',
+            overflow: 'hidden'
+          }}
+          onMouseEnter={(e) => e.currentTarget.style.color = '#c7511f'}
+          onMouseLeave={(e) => e.currentTarget.style.color = '#0f1111'}
+          >
               {product.title}
             </h3>
-          </div>
+        </Link>
 
-          {/* 评分 */}
-          <div className="flex items-center space-x-2">
-            <div className="flex items-center">
+        {/* Brand */}
+        {product.brand && (
+          <div style={{
+            fontSize: '12px',
+            color: '#565959',
+            marginBottom: '4px'
+          }}>
+            by {product.brand}
+          </div>
+        )}
+
+        {/* Rating */}
+        <div style={{
+          display: 'flex',
+          alignItems: 'center',
+          marginBottom: '4px'
+        }}>
+          <div style={{
+            display: 'flex',
+            color: '#de7921',
+            fontSize: '14px',
+            marginRight: '4px'
+          }}>
               {renderRating(product.rating)}
             </div>
-            <span className="text-sm text-gray-600">
-              ({product.reviewCount?.toLocaleString()})
+          <span style={{
+            fontSize: '12px',
+            color: '#007185',
+            marginRight: '8px'
+          }}>
+            {product.reviewCount?.toLocaleString()}
+          </span>
+          {product.reviewCount > 1000 && (
+            <span style={{
+              fontSize: '12px',
+              color: '#565959'
+            }}>
+              {product.reviewCount > 10000 ? '10K+' : `${Math.floor(product.reviewCount / 1000)}K+`} bought in past month
             </span>
+          )}
+        </div>
+
+        {/* Price */}
+        <div style={{ marginBottom: '8px' }}>
+          <div style={{
+            display: 'flex',
+            alignItems: 'flex-start'
+          }}>
+            <span style={{
+              fontSize: '14px',
+              color: '#0f1111',
+              position: 'relative',
+              top: '2px'
+            }}>$</span>
+            <span style={{
+              fontSize: '28px',
+              fontWeight: 400,
+              color: '#0f1111',
+              lineHeight: 1
+            }}>{priceWhole}</span>
+            <span style={{
+              fontSize: '14px',
+              color: '#0f1111',
+              position: 'relative',
+              top: '2px'
+            }}>{priceFraction}</span>
           </div>
 
-          {/* 描述 */}
-          <p className="text-sm text-gray-600 line-clamp-2">
-            {product.description}
-          </p>
-
-          {/* 特性 */}
-          {product.features && (
-            <div>
-              <ul className="text-sm text-gray-600 space-y-1">
-                {product.features.slice(0, showMoreFeatures ? product.features.length : 3).map((feature, index) => (
-                  <li key={index} className="flex items-start">
-                    <span className="mr-2">•</span>
-                    {feature}
-                  </li>
-                ))}
-              </ul>
-              {product.features.length > 3 && (
-                <button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    setShowMoreFeatures(!showMoreFeatures);
-                  }}
-                  className="text-sm text-blue-600 hover:text-blue-800 flex items-center mt-1"
-                >
-                  {showMoreFeatures ? (
-                    <>Show less <FaChevronUp className="ml-1" /></>
-                  ) : (
-                    <>Show more features <FaChevronDown className="ml-1" /></>
-                  )}
-                </button>
-              )}
-            </div>
-          )}
-
-          {/* 配送信息 */}
-          {product.delivery && (
-            <div className="text-sm text-gray-600">
-              {product.delivery.freeShipping && (
-                <div className="flex items-center">
-                  <FaShippingFast className="mr-1 text-green-600" />
-                  FREE delivery {product.delivery.prime ? 'tomorrow' : `in ${product.delivery.estimatedDays} days`}
-                </div>
-              )}
+          {product.originalPrice && product.originalPrice > product.price && (
+            <div style={{
+              fontSize: '14px',
+              color: '#565959'
+            }}>
+              List: <span style={{ textDecoration: 'line-through' }}>${product.originalPrice.toFixed(2)}</span>
+              <span style={{
+                color: '#cc0c39',
+                marginLeft: '8px',
+                fontWeight: 'bold'
+              }}>
+                ({discountPercent}% off)
+              </span>
             </div>
           )}
         </div>
 
-        {/* 价格和操作 */}
-        <div className="flex-shrink-0 w-48 text-right space-y-3">
-          {/* 价格 */}
-          <div>
-            <div className="text-2xl font-bold text-gray-900">
-              ${product.price.toFixed(2)}
-            </div>
-            {product.originalPrice && product.originalPrice > product.price && (
-              <div className="text-sm text-gray-500 line-through">
-                ${product.originalPrice.toFixed(2)}
+        {/* Prime & Delivery */}
+        {product.delivery?.prime && (
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            fontSize: '12px',
+            marginBottom: '4px'
+          }}>
+            <span style={{
+              color: '#1b94c2',
+              fontWeight: 'bold',
+              fontStyle: 'italic',
+              marginRight: '4px'
+            }}>prime</span>
+            <span style={{ color: '#565959' }}>
+              FREE delivery
+            </span>
               </div>
             )}
+
+        {product.delivery?.freeShipping && (
+          <div style={{
+            fontSize: '12px',
+            color: '#0f1111',
+            marginBottom: '4px'
+          }}>
+            FREE delivery <span style={{ fontWeight: 'bold' }}>
+              {product.delivery?.prime ? 'Tomorrow' : `${new Date(Date.now() + (product.delivery?.estimatedDays || 3) * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}`}
+            </span>
           </div>
+        )}
 
-          {/* Prime标签 */}
-          {product.delivery?.prime && (
-            <div className="inline-block bg-blue-500 text-white px-2 py-1 text-xs font-bold rounded">
-              Prime
+        {/* Stock Status */}
+        {product.inStock ? (
+          product.stockCount && product.stockCount <= 10 ? (
+            <div style={{
+              fontSize: '12px',
+              color: '#cc0c39',
+              marginBottom: '8px'
+            }}>
+              Only {product.stockCount} left in stock - order soon.
             </div>
-          )}
-
-          {/* 库存状态 */}
-          {product.inStock ? (
-            product.stockCount <= 10 && (
-              <div className="text-sm text-orange-600">
-                Only {product.stockCount} left
+          ) : (
+            <div style={{
+              fontSize: '12px',
+              color: '#007600',
+              marginBottom: '8px'
+            }}>
+              In Stock
               </div>
             )
           ) : (
-            <div className="text-sm text-red-600">Unavailable</div>
+          <div style={{
+            fontSize: '12px',
+            color: '#cc0c39',
+            marginBottom: '8px'
+          }}>
+            Currently unavailable
+          </div>
           )}
 
-          {/* 操作按钮 */}
-          <div className="space-y-2">
+        {/* Features */}
+        {product.features && product.features.length > 0 && (
+          <ul style={{
+            margin: 0,
+            padding: 0,
+            paddingLeft: '20px',
+            fontSize: '14px',
+            color: '#0f1111'
+          }}>
+            {product.features.slice(0, 3).map((feature, index) => (
+              <li key={index} style={{ marginBottom: '2px' }}>
+                {feature}
+              </li>
+            ))}
+          </ul>
+        )}
+
+        {/* Add to Cart Button */}
+        {product.inStock && (
             <button
               onClick={handleAddToCart}
-              disabled={!product.inStock}
-              className={`w-full py-2 px-4 rounded-lg font-medium transition-colors ${
-                product.inStock
-                  ? 'bg-orange-400 hover:bg-orange-500 text-gray-900'
-                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-              }`}
+            style={{
+              marginTop: '12px',
+              background: 'linear-gradient(to bottom, #f7dfa5, #f0c14b)',
+              border: '1px solid #a88734',
+              borderRadius: '20px',
+              padding: '8px 24px',
+              fontSize: '13px',
+              cursor: 'pointer',
+              color: '#0f1111',
+              boxShadow: '0 1px 0 rgba(255,255,255,.6) inset'
+            }}
+            onMouseEnter={(e) => e.currentTarget.style.background = 'linear-gradient(to bottom, #f5d78e, #eeb933)'}
+            onMouseLeave={(e) => e.currentTarget.style.background = 'linear-gradient(to bottom, #f7dfa5, #f0c14b)'}
               data-testid={`add-to-cart-${product.id}`}
             >
-              <FaShoppingCart className="inline mr-2" />
               Add to Cart
             </button>
-
-            <button
-              onClick={handleWishlistToggle}
-              className="w-full py-2 px-4 border border-gray-300 rounded-lg font-medium hover:bg-gray-50 transition-colors"
-              title={isInWishlist ? "Remove from wishlist" : "Add to wishlist"}
-            >
-              {isInWishlist ? (
-                <>
-                  <FaHeart className="inline mr-2 text-red-500" />
-                  In Wishlist
-                </>
-              ) : (
-                <>
-                  <FaRegHeart className="inline mr-2" />
-                  Add to List
-                </>
-              )}
-            </button>
-          </div>
+        )}
         </div>
-      </Link>
     </div>
   );
 };

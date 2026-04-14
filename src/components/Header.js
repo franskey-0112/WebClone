@@ -19,8 +19,8 @@ const Header = () => {
         navigation: [
           { href: '/hotels', icon: <FaHome className="mr-1" />, label: 'Home' },
           { href: '/hotels/search', icon: <FaHotel className="mr-1" />, label: 'Search Hotels' },
-          { href: '#', icon: <FaCar className="mr-1" />, label: 'Car Rental' },
-          { href: '/', icon: <FaPlane className="mr-1" />, label: 'Flights' }
+          { href: '/carrental', icon: <FaCar className="mr-1" />, label: 'Car Rental' },
+          { href: '/flights', icon: <FaPlane className="mr-1" />, label: 'Flights' }
         ]
       };
     } else if (pathname.startsWith('/amazon')) {
@@ -41,10 +41,10 @@ const Header = () => {
         logo: <FaPlane className="mr-2" />,
         primaryColor: 'bg-booking-dark-blue',
         navigation: [
-          { href: '/', icon: <FaPlane className="mr-1" />, label: 'Flights' },
+          { href: '/flights', icon: <FaPlane className="mr-1" />, label: 'Flights' },
           { href: '/hotels', icon: <FaHotel className="mr-1" />, label: 'Hotels' },
           { href: '/amazon', icon: <FaShoppingCart className="mr-1" />, label: 'Amazon' },
-          { href: '#', icon: <FaCar className="mr-1" />, label: 'Car Rental' }
+          { href: '/carrental', icon: <FaCar className="mr-1" />, label: 'Car Rental' }
         ]
       };
     }
@@ -81,10 +81,10 @@ const Header = () => {
 
           {/* User Area */}
           <div className="hidden md:flex items-center space-x-4">
-            <Link href="#" className="text-white no-underline hover:text-yellow-400 transition-colors">
+            <Link href="/amazon" className="text-white no-underline hover:text-yellow-400 transition-colors">
               <span>USD</span>
             </Link>
-            <Link href="#" className="text-white no-underline hover:text-yellow-400 transition-colors">
+            <Link href="/amazon/customer-service" className="text-white no-underline hover:text-yellow-400 transition-colors">
               Help
             </Link>
             <div className="flex items-center text-white">
@@ -118,7 +118,7 @@ const Header = () => {
                 </Link>
               ))}
               <div className="border-t border-white/20 pt-2 mt-2">
-                <Link href="#" className="block text-white no-underline hover:text-yellow-400 px-3 py-2">
+                <Link href="/amazon/customer-service" className="block text-white no-underline hover:text-yellow-400 px-3 py-2">
                   Help
                 </Link>
                 <div className="flex items-center text-white px-3 py-2">
