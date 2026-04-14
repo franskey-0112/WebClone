@@ -1,286 +1,172 @@
 # WebClone
 
-🌐 **Web Agent 评测环境** - 提供离线可控的网站克隆，用于 AI Agent 可复现测试与标准化评估。
+[中文](./README.md) | [English](./README.en.md)
+
+🌐 **Web Agent 评测环境（10站点离线版）**  
+提供可控、可复现的多网站克隆环境，用于 AI Agent 的标准化评测、回归测试和轨迹采集。
+
+## 📌 合并说明
+
+本仓库已将 **WebFactory 项目中的 10 个网站环境部分** 合并为独立的 `WebClone` 项目。  
+当前 README 以 `franskey-0112/WebClone` 原有文档风格为基础，并按本仓库实际文件结构与路由更新。
 
 ## 🎯 项目意义
 
-### 为什么需要 WebClone？
-
-在评测 Web Agent时，直接使用真实网站存在以下问题：
+在真实网站上评测 Web Agent 时，常见问题包括：
 
 | 问题 | 影响 |
 |------|------|
-| **网站内容动态变化** | 商品价格、库存、航班信息实时变动，导致测试结果不可复现 |
-| **网络依赖** | 需要稳定网络，测试速度受限于网络延迟 |
-| **反爬机制** | 频繁访问可能触发验证码或封禁 |
-| **数据不可控** | 无法预设特定场景（如"购物车有3件商品"） |
-| **隐私风险** | 测试可能涉及真实账户和支付信息 |
+| 网站内容实时变化 | 测试结果难复现（价格、库存、排序不断变化） |
+| 网络依赖和外部波动 | 延迟、失败率影响评测稳定性 |
+| 反爬限制 | 高频自动化测试容易触发风控 |
+| 场景不可控 | 难以稳定复现“指定任务” |
+| 隐私与安全风险 | 可能涉及真实账号、支付与个人信息 |
 
-### WebClone 的解决方案
+WebClone 的核心价值：
 
-✅ **完全离线运行** - 无需网络，本地即可测试  
-✅ **数据可控** - 静态数据，每次测试环境一致  
-✅ **可复现评估** - 便于对比不同 Agent 性能  
-✅ **批量数据生成** - 通过修改数据文件，快速生成不同测试场景  
-✅ **安全无风险** - 不涉及真实交易和个人信息、默认为登录状态 
+- ✅ 完全离线运行，环境稳定
+- ✅ 数据可控，可快速构造任务场景
+- ✅ 可复现评测，适合横向对比不同 Agent
+- ✅ 支持回归测试，便于版本迭代验证
+- ✅ 默认无真实交易风险
 
-### 应用场景
+## 🌐 已实现网站（10个）
 
-1. **Agent 能力评测** - 测试 AI Agent 在购物、预订等任务上的表现
-2. **对比实验** - 在相同环境下对比不同 Agent 或提示词的效果
-3. **回归测试** - 验证 Agent 更新后是否保持原有能力
-4. **教学演示** - 展示 Web Agent 工作原理
-5. **数据集构建** - 可以批量收集 Agent 交互轨迹用于训练和分析
+统一入口：`http://localhost:3000`
 
-## 🌐 已实现的网站
-
-| 网站 | 路径 | 功能 |
-|------|------|------|
-| 航班预订 | `/flights` | 航班搜索、筛选、预订 |
-| 亚马逊购物 | `/amazon` | 商品浏览、搜索、购物车、结算 |
-| Bose 官网 | `/bose` | 音频产品浏览、搜索、购物车、结算 |
-| 优酷视频 | `/youku` | 视频浏览、搜索、播放、VIP会员、收藏、历史记录 |
+| 网站 | 路由 | 主要功能 |
+|------|------|----------|
+| Amazon | `/amazon` | 商品浏览、搜索、分类、详情、购物车、结算、订单 |
+| Flights | `/flights` | 航班搜索、筛选、详情、预订 |
+| Hotels | `/hotels` | 酒店搜索、详情、预订 |
+| StayBnB | `/staybnb` | 民宿检索、房源详情、收藏、行程、房东页 |
+| CarRental | `/carrental` | 车型浏览、搜索、优惠、门店、车辆详情、预订 |
+| CareerLink | `/careerlink` | 职位搜索、公司页、个人资料、社交网络、消息与通知 |
+| MasterTicket | `/masterticket` | 演出活动检索、详情、票务结算 |
+| MealDash | `/mealdash` | 餐厅/品类浏览、下单、购物车、结算、订单追踪 |
+| CompanyCheck | `/companycheck` | 公司检索、评价、薪资、面试、职位信息 |
+| Email | `/email` | 收件箱、标签、文件夹、邮件详情 |
 
 ## 📁 项目结构
 
-```
+```text
 WebClone/
 ├── src/
-│   ├── components/          # React 组件
-│   │   ├── amazon/          # Amazon 组件
-│   │   ├── bose/            # Bose 组件
-│   │   ├── youku/           # 优酷组件
-│   │   ├── Header.js        # 通用头部组件
-│   │   ├── Footer.js        # 通用底部组件
-│   │   ├── SearchForm.js    # 搜索表单
-│   │   ├── FlightCard.js    # 航班卡片
-│   │   ├── FlightDetails.js # 航班详情
-│   │   └── FlightFilters.js # 航班筛选
-│   │
-│   ├── pages/               # Next.js 页面路由
-│   │   ├── amazon/          # Amazon 页面
-│   │   │   ├── index.js     # 首页
-│   │   │   ├── search.js    # 搜索页
-│   │   │   ├── cart.js      # 购物车
-│   │   │   ├── checkout.js  # 结算页
-│   │   │   ├── category/    # 分类页
-│   │   │   └── product/     # 产品详情页
-│   │   ├── bose/            # Bose 页面
-│   │   │   ├── index.js     # 首页
-│   │   │   ├── search.js    # 搜索页
-│   │   │   ├── cart.js      # 购物车
-│   │   │   └── product/     # 产品详情页
-│   │   ├── youku/           # 优酷页面
-│   │   │   ├── index.js     # 首页
-│   │   │   ├── search.js    # 搜索页
-│   │   │   ├── vip.js       # VIP会员页
-│   │   │   ├── favorites.js # 收藏页
-│   │   │   ├── history.js   # 历史记录
-│   │   │   ├── video/       # 视频详情页
-│   │   │   ├── channel/     # 频道页
-│   │   │   └── user/        # 用户中心
-│   │   ├── flights/         # 航班页面
-│   │   │   ├── index.js     # 首页
-│   │   │   ├── search.js    # 搜索页
-│   │   │   └── [id]/book.js # 预订页
-│   │   ├── index.js         # 主页
-│   │   └── _app.js          # App 入口
-│   │
-│   ├── data/                # 静态数据（可修改以生成不同测试场景）
-│   │   ├── amazonData.js    # Amazon 产品数据
-│   │   ├── boseData.js      # Bose 产品数据
-│   │   ├── youkuData.js     # 优酷视频数据
-│   │   └── staticFlightData.js  # 航班数据
-│   │
-│   ├── utils/               # 工具函数
-│   │   └── flightData.js
-│   │
+│   ├── pages/
+│   │   ├── amazon/
+│   │   ├── flights/
+│   │   ├── hotels/
+│   │   ├── staybnb/
+│   │   ├── carrental/
+│   │   ├── careerlink/
+│   │   ├── masterticket/
+│   │   ├── mealdash/
+│   │   ├── companycheck/
+│   │   ├── email/
+│   │   ├── index.js
+│   │   └── _app.js
+│   ├── components/
+│   │   ├── amazon/
+│   │   ├── careerlink/
+│   │   ├── carrental/
+│   │   ├── companycheck/
+│   │   ├── email/
+│   │   ├── hotels/
+│   │   ├── masterticket/
+│   │   ├── mealdash/
+│   │   ├── staybnb/
+│   │   ├── Header.js
+│   │   ├── Footer.js
+│   │   └── SearchForm.js
+│   ├── data/
+│   │   ├── amazonData.js
+│   │   ├── staticFlightData.js
+│   │   ├── staticHotelData.js
+│   │   ├── staticStaybnbData.js
+│   │   ├── staticCarRentalData.js
+│   │   ├── staticCareerLinkData.js
+│   │   ├── staticMasterTicketData.js
+│   │   ├── staticMealDashData.js
+│   │   ├── staticCompanyCheckData.js
+│   │   └── staticEmailData.js
+│   ├── utils/
 │   └── styles/
-│       └── globals.css
-│
 ├── public/
-│   ├── favicon.ico
-│   └── images/
-│       ├── amazon/          # Amazon 产品图片
-│       ├── bose/            # Bose 产品图片
-│       └── youku/           # 优酷视频海报
-│
 ├── package.json
-├── next.config.js
-├── tailwind.config.js
-└── postcss.config.js
+└── README.md
 ```
 
 ## 🚀 快速开始
 
-### 安装依赖
+### 1) 安装依赖
 
 ```bash
 npm install
 ```
 
-### 启动开发服务器
+### 2) 启动开发环境
 
 ```bash
 npm run dev
 ```
 
-访问 http://localhost:3000 查看所有可用网站。
+打开：`http://localhost:3000`
 
-### 构建生产版本
+### 3) 生产构建与运行
 
 ```bash
 npm run build
 npm start
 ```
 
-## 📊 批量数据生成
+## 📊 批量场景生成
 
-通过修改 `src/data/` 下的数据文件，可以快速生成不同的测试场景：
+通过修改 `src/data/` 下静态数据文件，即可快速构造可复现任务。
 
-### 示例：修改商品数据
+示例：
 
-```javascript
-// src/data/amazonData.js
-export const products = [
-  {
-    id: 1,
-    name: "iPhone 15 Pro",
-    price: 999.99,
-    rating: 4.8,
-    reviews: 1234,
-    inStock: true,
-    // 修改这些字段来创建不同场景
-  },
-  // 添加更多商品...
-];
-```
+- `src/data/amazonData.js`：商品、价格、库存、类目
+- `src/data/staticFlightData.js`：航班班次、票价、出发到达时间
+- `src/data/staticHotelData.js`：酒店、房型、价格、可订状态
 
-### 示例：修改航班数据
+## 🧪 评测建议
+
+建议统一任务定义模板，便于多 Agent 对比：
 
 ```javascript
-// src/data/staticFlightData.js
-export const flights = [
-  {
-    id: 1,
-    airline: "东方航空",
-    departure: "北京",
-    arrival: "上海",
-    price: 580,
-    duration: "2h 15m",
-    // 修改这些字段来创建不同场景
-  },
-  // 添加更多航班...
-];
-```
-
-## 📝 如何添加新网站
-
-### 1. 创建组件目录
-
-在 `src/components/` 下创建新网站的组件目录：
-
-```
-src/components/your_site/
-├── YourSiteHeader.js    # 头部导航
-├── YourSiteCard.js      # 列表卡片
-└── YourSiteFilters.js   # 筛选组件
-```
-
-### 2. 创建页面路由
-
-在 `src/pages/` 下创建页面目录：
-
-```
-src/pages/your_site/
-├── index.js             # 首页
-├── search.js            # 搜索/列表页
-└── [id].js              # 详情页（动态路由）
-```
-
-### 3. 创建静态数据
-
-在 `src/data/` 下创建数据文件：
-
-```javascript
-// src/data/yourSiteData.js
-export const yourSiteItems = [
-  {
-    id: 1,
-    name: "示例项目",
-    price: 99.99,
-    // ... 其他字段
-  }
-];
-```
-
-### 4. 添加到主页
-
-在 `src/pages/index.js` 的 `sites` 数组中添加：
-
-```javascript
-{
-  name: '你的网站',
-  path: '/your_site',
-  description: '网站描述',
-  color: '#颜色代码',
-  icon: '🎯'
-}
-```
-
-### 5. 添加资源文件（可选）
-
-如果需要图片资源，放置在：
-
-```
-public/images/your_site/
-├── products/
-├── banners/
-└── ...
-```
-
-## 🎨 命名规范
-
-- **组件目录**: 小写，如 `amazon`、`flights`、`bose`、`youku`
-- **组件文件**: 大驼峰，如 `ProductCard.js`
-- **页面文件**: 小写，如 `index.js`、`search.js`
-- **数据文件**: 小驼峰，如 `amazonData.js`
-
-## 🔬 评测建议
-
-### 设计可复现的测试任务
-
-```javascript
-// 示例任务定义
 const task = {
   id: "amazon-search-001",
-  description: "在 Amazon 搜索 'iPhone 15'，找到价格最低的商品并加入购物车",
+  description: "在 Amazon 搜索 iPhone 15，筛选后加入购物车",
   startUrl: "/amazon",
   expectedActions: ["search", "filter", "add_to_cart"],
-  successCriteria: "购物车中包含目标商品"
+  successCriteria: "购物车中出现目标商品"
 };
 ```
 
-### 记录 Agent 交互轨迹
+建议记录：
 
-建议在测试时记录：
-- 每一步的 DOM 状态
-- Agent 的决策和动作
+- 每一步页面状态（DOM 或截图）
+- Agent 的动作与理由
 - 任务完成时间
-- 最终结果（成功/失败）
+- 最终结果（成功/失败）与失败原因
+
+## 🧩 如何扩展新网站
+
+1. 在 `src/components/` 新建站点组件目录  
+2. 在 `src/pages/` 新建路由与动态页  
+3. 在 `src/data/` 增加静态数据文件  
+4. 在 `src/pages/index.js` 首页入口补充站点卡片  
+5. （可选）在 `public/images/` 添加站点素材
 
 ## 🤝 贡献指南
 
-1. Fork 本仓库
-2. 创建功能分支 (`git checkout -b feature/new-site`)
-3. 提交更改 (`git commit -m 'Add new site: xxx'`)
-4. 推送到分支 (`git push origin feature/new-site`)
-5. 创建 Pull Request
+1. Fork 仓库
+2. 新建分支（示例：`feature/new-site`）
+3. 提交更改
+4. 推送分支
+5. 发起 Pull Request
 
-欢迎贡献新的网站克隆！请确保：
-- 遵循现有的代码结构和命名规范
-- 提供完整的静态数据
-- 更新 README 中的网站列表
+欢迎继续补充新的站点克隆场景与评测任务模板。
 
 ## 📜 License
 
