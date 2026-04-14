@@ -3,9 +3,6 @@
  * 包含商品信息、分类信息、用户数据等
  */
 
-// 导入 DummyJSON 真实商品数据（图片与描述匹配）
-import { allDummyJsonProducts } from './dummyJsonProducts';
-
 // 商品分类
 export const categories = [
   {
@@ -5306,26 +5303,7 @@ export const products = [
     delivery: { prime: false, freeShipping: true, estimatedDays: 4 },
     seller: { name: 'Outdoor Gear Plus', rating: 4.1, fulfillment: 'Merchant' }
   }
-  // 注意：已移除使用 Unsplash 不匹配图片的厨房商品，请使用 DummyJSON 真实商品数据
 ];
-
-// 被移除的商品（Unsplash 图片不匹配）:
-// - cuisinart-stainless-steel-cookware-set
-// - lodge-cast-iron-skillet-12inch
-// - kitchenaid-stand-mixer-5qt
-// - breville-smart-oven-pro
-// - all-clad-stainless-steel-fry-pan
-// - hamilton-beach-toaster-oven
-// - zwilling-knife-set-8pc
-// - instant-vortex-plus-air-fryer-6qt
-// - vitamix-e310-blender
-// - oxo-good-grips-container-set
-// - pyrex-glass-storage-set-18pc
-// - calphalon-nonstick-pan-set-10pc
-
-// 以下为用户数据
-// 注意：使用 DummyJSON 真实商品数据代替上述被删除的商品
-// (已从 dummyJsonProducts.js 导入)
 
 // 用户数据（用于结账测试）
 export const users = [
@@ -5392,7 +5370,7 @@ export const deals = [
     title: 'Lightning Deal',
     description: 'Save up to 40% on Electronics',
     discountPercent: 40,
-    endTime: new Date(Date.now() + 6 * 60 * 60 * 1000),
+    endTime: new Date(Date.now() + 6 * 60 * 60 * 1000), // 6 hours from now
     products: ['iphone-15-pro', 'samsung-galaxy-s24', 'macbook-air-m3']
   },
   {
@@ -5400,7 +5378,7 @@ export const deals = [
     title: 'Best Sellers',
     description: 'Top picks in Books',
     discountPercent: 25,
-    endTime: new Date(Date.now() + 24 * 60 * 60 * 1000),
+    endTime: new Date(Date.now() + 24 * 60 * 60 * 1000), // 24 hours from now
     products: ['atomic-habits', 'fourth-wing']
   }
 ];
@@ -5408,52 +5386,131 @@ export const deals = [
 // 推荐算法数据
 export const recommendations = {
   'frequently-bought-together': {
-    'iphone-15-pro': ['dj-iphone-13-pro', 'dj-iphone-x'],
-    'samsung-galaxy-s24': ['dj-samsung-galaxy-s10', 'dj-realme-xt'],
-    'macbook-air-m3': ['dj-macbook-pro-14', 'dj-dell-xps-13'],
-    'dj-microwave-oven': ['dj-boxed-blender', 'dj-electric-stove'],
-    'instant-pot-duo': ['dj-carbon-steel-wok', 'dj-hand-blender']
+    'iphone-15-pro': ['apple-case-iphone-15', 'apple-charger-usbc', 'apple-airpods-3'],
+    'iphone-16-128gb-black': ['apple-case-iphone-15', 'apple-charger-usbc', 'apple-airpods-pro-2'],
+    'iphone-16-pro-128gb-natural-titanium': ['apple-case-iphone-15', 'apple-charger-usbc', 'apple-airpods-pro-2'],
+    'samsung-galaxy-s24': ['anker-usb-c-cable-100w', 'sandisk-extreme-microsd-128gb'],
+    'samsung-galaxy-s25-128gb-phantom-black': ['anker-usb-c-cable-100w', 'sandisk-extreme-microsd-128gb'],
+    'google-pixel-9-128gb-obsidian': ['anker-usb-c-cable-100w', 'google-pixel-9-256gb-porcelain'],
+    'macbook-air-m3': ['apple-mouse-magic', 'apple-keyboard-magic', 'laptop-stand'],
+    'macbook-air-m4-13-256gb-midnight': ['apple-mouse-magic', 'apple-keyboard-magic', 'laptop-stand'],
+    'dell-xps-13-plus-i5-16gb-512gb': ['laptop-stand', 'anker-usb-c-cable-100w'],
+    'instant-pot-duo': ['ninja-air-fryer', 'keurig-k-classic-coffee-maker'],
+    'sony-wh-1000xm5': ['anker-usb-c-cable-100w', 'sandisk-extreme-microsd-128gb']
   },
   'customers-who-viewed': {
-    'iphone-15-pro': ['dj-iphone-13-pro', 'samsung-galaxy-s24', 'dj-oppo-a57'],
-    'macbook-air-m3': ['dj-macbook-pro-14', 'dj-asus-zenbook-pro', 'dell-xps-13'],
-    'dj-microwave-oven': ['dj-boxed-blender', 'dj-electric-stove', 'dj-hand-blender']
+    'iphone-15-pro': ['iphone-16-pro-128gb-natural-titanium', 'samsung-galaxy-s25-128gb-phantom-black', 'google-pixel-9-pro-256gb-hazel'],
+    'iphone-16-128gb-black': ['iphone-16-256gb-pink', 'iphone-16-pro-128gb-natural-titanium', 'samsung-galaxy-s25-128gb-phantom-black'],
+    'iphone-16-pro-128gb-natural-titanium': ['iphone-16-pro-256gb-white-titanium', 'iphone-16-pro-max-256gb-desert-titanium', 'samsung-galaxy-s25-ultra-256gb-titanium-gray'],
+    'samsung-galaxy-s24': ['samsung-galaxy-s25-128gb-phantom-black', 'iphone-16-128gb-black', 'google-pixel-9-128gb-obsidian'],
+    'samsung-galaxy-s25-128gb-phantom-black': ['samsung-galaxy-s25-256gb-cream', 'samsung-galaxy-s25-plus-256gb-icy-blue', 'iphone-16-128gb-black'],
+    'google-pixel-9-128gb-obsidian': ['google-pixel-9-256gb-porcelain', 'google-pixel-9-pro-256gb-hazel', 'samsung-galaxy-s25-128gb-phantom-black'],
+    'macbook-air-m3': ['macbook-air-m4-13-256gb-midnight', 'dell-xps-13-plus-i5-16gb-512gb', 'hp-spectre-x360-14-i7-16gb-512gb'],
+    'macbook-air-m4-13-256gb-midnight': ['macbook-air-m4-13-512gb-starlight', 'macbook-pro-14-m4-512gb-space-black', 'dell-xps-13-plus-i5-16gb-512gb'],
+    'dell-xps-13-plus-i5-16gb-512gb': ['dell-xps-13-i7-32gb-1tb-oled', 'macbook-air-m4-13-256gb-midnight', 'hp-spectre-x360-14-i7-16gb-512gb'],
+    'atomic-habits': ['the-7-habits', 'deep-work', 'mindset', 'sapiens'],
+    'sony-wh-1000xm5': ['bose-quietcomfort-ultra', 'apple-airpods-pro-2', 'apple-airpods-3'],
+    'nintendo-switch-oled': ['playstation-5-slim', 'xbox-series-x', 'asus-rog-strix-g16-i7-rtx4060-16gb-1tb']
   }
 };
 
-// 品牌数据
-export const brands = [
-  { id: 'apple', name: 'Apple', logo: 'https://logos-world.net/wp-content/uploads/2020/04/Apple-Logo.png' },
-  { id: 'samsung', name: 'Samsung', logo: 'https://logos-world.net/wp-content/uploads/2020/04/Samsung-Logo.png' },
-  { id: 'sony', name: 'Sony', logo: 'https://logos-world.net/wp-content/uploads/2020/04/Sony-Logo.png' },
-  { id: 'dell', name: 'Dell', logo: 'https://logos-world.net/wp-content/uploads/2020/08/Dell-Logo.png' },
-  { id: 'amazon-basics', name: 'Amazon Basics', logo: 'https://via.placeholder.com/150x75/232f3e/ffffff?text=Amazon+Basics' }
+// 搜索建议数据
+export const searchSuggestions = [
+  'iPhone 16',
+  'iPhone 16 Pro',
+  'iPhone 16 Pro Max',
+  'iPhone 15',
+  'MacBook Air M4',
+  'MacBook Pro M4',
+  'MacBook Air',
+  'Samsung Galaxy S25',
+  'Samsung Galaxy S25 Ultra',
+  'Samsung Galaxy',
+  'Google Pixel 9',
+  'Google Pixel 9 Pro',
+  'Dell XPS 13',
+  'Dell XPS 15',
+  'HP Spectre x360',
+  'HP OMEN gaming',
+  'MSI gaming laptop',
+  'ASUS ROG laptop',
+  'Alienware laptop',
+  'Sony WH-1000XM5',
+  'Bose QuietComfort',
+  'AirPods Pro',
+  'Nintendo Switch OLED',
+  'PlayStation 5',
+  'Xbox Series X',
+  'Canon EOS R6',
+  'Sony A7 IV',
+  'Instant Pot',
+  'Ninja Air Fryer',
+  'Keurig coffee maker',
+  'Breville Smart Oven',
+  'YETI tumbler',
+  'Hydro Flask',
+  'Coleman camping',
+  'Fitbit Charge 6',
+  'Apple Watch',
+  'Atomic Habits',
+  'Sapiens book',
+  'Harry Potter',
+  'Fourth Wing',
+  'The Night Circus',
+  'Levi jeans',
+  'adidas Ultraboost',
+  'G-Shock watch',
+  'DEWALT drill',
+  'Anker USB-C cable',
+  'SanDisk microSD',
+  'Bluetooth headphones',
+  'Wireless charger',
+  'Kitchen appliances',
+  'Home decor',
+  'Fitness tracker',
+  'Books bestsellers',
+  'Gaming laptop',
+  'Coffee maker',
+  'Air fryer',
+  'Camping chair'
 ];
 
-// 合并所有商品数据（原有数据 + DummyJSON 真实数据）
-export const allProducts = [...products, ...allDummyJsonProducts];
-
-// 搜索建议（用于头部搜索下拉）
-export const searchSuggestions = Array.from(
-  new Set([
-    ...categories.map((category) => category.name),
-    ...categories.flatMap((category) => category.subcategories.map((subcategory) => subcategory.name)),
-    ...allProducts.slice(0, 250).map((product) => product.title),
-    'today deals',
-    'prime day deals',
-    'wireless earbuds',
-    'gaming laptop',
-    'kitchen essentials',
-    'gift cards',
-    'customer service',
-    'best sellers',
-    'registry'
-  ])
-);
+// 品牌数据
+export const brands = [
+  { id: 'apple', name: 'Apple', logo: '/images/amazon/brands/apple.png' },
+  { id: 'samsung', name: 'Samsung', logo: '/images/amazon/brands/samsung.png' },
+  { id: 'dell', name: 'Dell', logo: '/images/amazon/brands/dell.png' },
+  { id: 'levi', name: "Levi's", logo: '/images/amazon/brands/levis.png' },
+  { id: 'yeti', name: 'YETI', logo: '/images/amazon/brands/yeti.png' },
+  { id: 'google', name: 'Google', logo: 'https://logos-world.net/wp-content/uploads/2020/09/Google-Symbol.png' },
+  { id: 'sony', name: 'Sony', logo: 'https://logos-world.net/wp-content/uploads/2020/04/Sony-Logo.png' },
+  { id: 'bose', name: 'Bose', logo: 'https://logos-world.net/wp-content/uploads/2020/09/Bose-Logo.png' },
+  { id: 'canon', name: 'Canon', logo: 'https://logos-world.net/wp-content/uploads/2020/04/Canon-Logo.png' },
+  { id: 'nintendo', name: 'Nintendo', logo: 'https://logos-world.net/wp-content/uploads/2020/09/Nintendo-Symbol.png' },
+  { id: 'microsoft', name: 'Microsoft', logo: 'https://logos-world.net/wp-content/uploads/2020/04/Microsoft-Logo.png' },
+  { id: 'hp', name: 'HP', logo: 'https://logos-world.net/wp-content/uploads/2020/07/HP-Logo.png' },
+  { id: 'msi', name: 'MSI', logo: 'https://logos-world.net/wp-content/uploads/2020/11/MSI-Logo.png' },
+  { id: 'asus', name: 'ASUS', logo: 'https://logos-world.net/wp-content/uploads/2020/04/Asus-Logo.png' },
+  { id: 'alienware', name: 'Alienware', logo: 'https://logos-world.net/wp-content/uploads/2021/02/Alienware-Logo.png' },
+  { id: 'anker', name: 'Anker', logo: 'https://logos-world.net/wp-content/uploads/2021/11/Anker-Logo.png' },
+  { id: 'sandisk', name: 'SanDisk', logo: 'https://logos-world.net/wp-content/uploads/2020/11/SanDisk-Logo.png' },
+  { id: 'fitbit', name: 'Fitbit', logo: 'https://logos-world.net/wp-content/uploads/2020/09/Fitbit-Logo.png' },
+  { id: 'adidas', name: 'adidas', logo: 'https://logos-world.net/wp-content/uploads/2020/04/Adidas-Logo.png' },
+  { id: 'casio', name: 'Casio', logo: 'https://logos-world.net/wp-content/uploads/2020/11/Casio-Logo.png' },
+  { id: 'dewalt', name: 'DEWALT', logo: 'https://logos-world.net/wp-content/uploads/2020/11/DeWalt-Logo.png' },
+  { id: 'breville', name: 'Breville', logo: 'https://logos-world.net/wp-content/uploads/2021/11/Breville-Logo.png' },
+  { id: 'ninja', name: 'Ninja', logo: 'https://logos-world.net/wp-content/uploads/2021/02/Ninja-Logo.png' },
+  { id: 'keurig', name: 'Keurig', logo: 'https://logos-world.net/wp-content/uploads/2021/02/Keurig-Logo.png' },
+  { id: 'hydro-flask', name: 'Hydro Flask', logo: 'https://logos-world.net/wp-content/uploads/2021/02/Hydro-Flask-Logo.png' },
+  { id: 'coleman', name: 'Coleman', logo: 'https://logos-world.net/wp-content/uploads/2021/02/Coleman-Logo.png' },
+  { id: 'spalding', name: 'Spalding', logo: 'https://logos-world.net/wp-content/uploads/2020/11/Spalding-Logo.png' },
+  { id: 'speedo', name: 'Speedo', logo: 'https://logos-world.net/wp-content/uploads/2020/11/Speedo-Logo.png' },
+  { id: 'bedsure', name: 'Bedsure', logo: 'https://via.placeholder.com/150x75/007bff/ffffff?text=Bedsure' }
+];
 
 // 工具函数
 export const getProductsByCategory = (categoryId, subcategoryId = null) => {
-  return allProducts.filter(product => {
+  return products.filter(product => {
     if (subcategoryId) {
       return product.category === categoryId && product.subcategory === subcategoryId;
     }
@@ -5462,10 +5519,11 @@ export const getProductsByCategory = (categoryId, subcategoryId = null) => {
 };
 
 export const getProductById = (productId) => {
-  const product = allProducts.find(product => product.id === productId);
+  const product = products.find(product => product.id === productId);
   
   if (!product) return null;
   
+  // 为商品详情页添加额外的详细信息
   return {
     ...product,
     features: product.features || [
@@ -5505,7 +5563,7 @@ export const getProductById = (productId) => {
 
 export const searchProducts = (query) => {
   const lowerQuery = query.toLowerCase();
-  return allProducts.filter(product => 
+  return products.filter(product => 
     product.title.toLowerCase().includes(lowerQuery) ||
     product.description.toLowerCase().includes(lowerQuery) ||
     product.brand.toLowerCase().includes(lowerQuery)
@@ -5523,8 +5581,4 @@ export const getFeaturedDeals = () => {
 
 export const getBrandById = (brandId) => {
   return brands.find(brand => brand.id === brandId);
-};
-
-// ===== 数据文件结束 =====
-// 已清理：移除了使用 Unsplash 不匹配图片的商品
-// 使用 DummyJSON 真实商品数据替代
+}; 

@@ -1,65 +1,32 @@
-# Next.js
-.next/
-out/
-build/
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
 
-# Node
-node_modules/
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
+.DS_Store
+*.pem
+
+# debug
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Environment variables
-.env
+# local env files
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
 
-# Python
-__pycache__/
-*.py[cod]
-*.pyo
-.pytest_cache/
-.mypy_cache/
-.ruff_cache/
-*.egg-info/
-dist/
-
-# Virtual environments
-venv/
-env/
-.venv/
-
-# Logs
-*.log
-test/
-
-# OS
-.DS_Store
-Thumbs.db
-
-# Editor
-.idea/
-.vscode/
-*.swp
-*.swo
-
-# Large model weights / embeddings
-open operator/Embedding/VLM2Vec-pro/
-open operator/Embedding/experiments/
-*.index
-*.parquet
-*.bin
-*.safetensors
-*.pt
-*.pth
-
-# Paper PDF
-WebFactory.pdf
-
-# Evaluation artifacts
-screenshots/
-screens/
-cua_test/
-results/
+# vercel
+.vercel
