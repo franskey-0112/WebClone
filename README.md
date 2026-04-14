@@ -40,6 +40,14 @@
 | 亚马逊购物 | `/amazon` | 商品浏览、搜索、购物车、结算 |
 | Bose 官网 | `/bose` | 音频产品浏览、搜索、购物车、结算 |
 | 优酷视频 | `/youku` | 视频浏览、搜索、播放、VIP会员、收藏、历史记录 |
+| 酒店预订 | `/hotels` | 酒店搜索、筛选、详情、预订 |
+| 民宿预订 | `/staybnb` | 房源浏览、搜索、收藏、行程、预订 |
+| 租车服务 | `/carrental` | 车型搜索、筛选、门店、优惠、预订 |
+| 职业社交 | `/careerlink` | 职位搜索、公司页、消息、通知、个人主页 |
+| 演出票务 | `/masterticket` | 活动搜索、详情、选座、结算 |
+| 外卖平台 | `/mealdash` | 餐厅浏览、分类、购物车、下单、订单追踪 |
+| 公司点评 | `/companycheck` | 公司搜索、薪资、面试、评价、岗位信息 |
+| 邮件系统 | `/email` | 收件箱、标签、线程、文件夹、邮件详情 |
 
 ## 📁 项目结构
 
@@ -49,6 +57,14 @@ WebClone/
 │   ├── components/          # React 组件
 │   │   ├── amazon/          # Amazon 组件
 │   │   ├── bose/            # Bose 组件
+│   │   ├── hotels/          # 酒店组件
+│   │   ├── staybnb/         # 民宿组件
+│   │   ├── carrental/       # 租车组件
+│   │   ├── careerlink/      # 职业社交组件
+│   │   ├── masterticket/    # 票务组件
+│   │   ├── mealdash/        # 外卖组件
+│   │   ├── companycheck/    # 公司点评组件
+│   │   ├── email/           # 邮件组件
 │   │   ├── youku/           # 优酷组件
 │   │   ├── Header.js        # 通用头部组件
 │   │   ├── Footer.js        # 通用底部组件
@@ -83,6 +99,14 @@ WebClone/
 │   │   │   ├── index.js     # 首页
 │   │   │   ├── search.js    # 搜索页
 │   │   │   └── [id]/book.js # 预订页
+│   │   ├── hotels/          # 酒店页面
+│   │   ├── staybnb/         # 民宿页面
+│   │   ├── carrental/       # 租车页面
+│   │   ├── careerlink/      # 职业社交页面
+│   │   ├── masterticket/    # 票务页面
+│   │   ├── mealdash/        # 外卖页面
+│   │   ├── companycheck/    # 公司点评页面
+│   │   ├── email/           # 邮件页面
 │   │   ├── index.js         # 主页
 │   │   └── _app.js          # App 入口
 │   │
@@ -90,10 +114,26 @@ WebClone/
 │   │   ├── amazonData.js    # Amazon 产品数据
 │   │   ├── boseData.js      # Bose 产品数据
 │   │   ├── youkuData.js     # 优酷视频数据
-│   │   └── staticFlightData.js  # 航班数据
+│   │   ├── staticFlightData.js      # 航班数据
+│   │   ├── staticHotelData.js       # 酒店数据
+│   │   ├── staticStaybnbData.js     # 民宿数据
+│   │   ├── staticCarRentalData.js   # 租车数据
+│   │   ├── staticCareerLinkData.js  # 职业社交数据
+│   │   ├── staticMasterTicketData.js# 票务数据
+│   │   ├── staticMealDashData.js    # 外卖数据
+│   │   ├── staticCompanyCheckData.js# 公司点评数据
+│   │   └── staticEmailData.js       # 邮件数据
 │   │
 │   ├── utils/               # 工具函数
-│   │   └── flightData.js
+│   │   ├── flightData.js
+│   │   ├── hotelData.js
+│   │   ├── staybnbData.js
+│   │   ├── carRentalData.js
+│   │   ├── careerLinkData.js
+│   │   ├── masterTicketData.js
+│   │   ├── mealDashData.js
+│   │   ├── companyCheckData.js
+│   │   └── emailData.js
 │   │
 │   └── styles/
 │       └── globals.css
@@ -103,6 +143,7 @@ WebClone/
 │   └── images/
 │       ├── amazon/          # Amazon 产品图片
 │       ├── bose/            # Bose 产品图片
+│       ├── hotels/          # 酒店图片
 │       └── youku/           # 优酷视频海报
 │
 ├── package.json
@@ -174,6 +215,22 @@ export const flights = [
 ];
 ```
 
+### 示例：修改酒店数据
+
+```javascript
+// src/data/staticHotelData.js
+export const hotels = [
+  {
+    id: 1,
+    name: "Grand Luxury Hotel",
+    city: "New York",
+    pricePerNight: 299,
+    // 修改这些字段来创建不同场景
+  },
+  // 添加更多酒店...
+];
+```
+
 ## 📝 如何添加新网站
 
 ### 1. 创建组件目录
@@ -241,7 +298,7 @@ public/images/your_site/
 
 ## 🎨 命名规范
 
-- **组件目录**: 小写，如 `amazon`、`flights`、`bose`、`youku`
+- **组件目录**: 小写，如 `amazon`、`flights`、`bose`、`youku`、`hotels`、`staybnb`
 - **组件文件**: 大驼峰，如 `ProductCard.js`
 - **页面文件**: 小写，如 `index.js`、`search.js`
 - **数据文件**: 小驼峰，如 `amazonData.js`
