@@ -1,130 +1,109 @@
 # WebClone
 
-🌐 **Web Agent 评测环境** - 提供离线可控的网站克隆，用于 AI Agent 可复现测试与标准化评估。
+[English](./README.md) | [中文](./README.zh-CN.md)
 
-## 🎯 项目意义
+🌐 **Web Agent Evaluation Environment** - Offline, controllable website clones for reproducible AI agent testing and standardized benchmarking.
 
-### 为什么需要 WebClone？
+## 🎯 Why WebClone?
 
-在评测 Web Agent时，直接使用真实网站存在以下问题：
+When evaluating web agents on live websites, we usually face these problems:
 
-| 问题 | 影响 |
+| Problem | Impact |
 |------|------|
-| **网站内容动态变化** | 商品价格、库存、航班信息实时变动，导致测试结果不可复现 |
-| **网络依赖** | 需要稳定网络，测试速度受限于网络延迟 |
-| **反爬机制** | 频繁访问可能触发验证码或封禁 |
-| **数据不可控** | 无法预设特定场景（如"购物车有3件商品"） |
-| **隐私风险** | 测试可能涉及真实账户和支付信息 |
+| Dynamic website content | Prices, inventory, and listings change in real time, making results hard to reproduce |
+| Network dependency | Test stability and speed are limited by network quality |
+| Anti-bot protections | Frequent automated interactions may trigger CAPTCHA or blocking |
+| Uncontrollable scenarios | Hard to preset specific states (for example, "cart has 3 items") |
+| Privacy risk | Testing may involve real accounts and payment data |
 
-### WebClone 的解决方案
+### What WebClone solves
 
-✅ **完全离线运行** - 无需网络，本地即可测试  
-✅ **数据可控** - 静态数据，每次测试环境一致  
-✅ **可复现评估** - 便于对比不同 Agent 性能  
-✅ **批量数据生成** - 通过修改数据文件，快速生成不同测试场景  
-✅ **安全无风险** - 不涉及真实交易和个人信息、默认为登录状态 
+✅ **Fully offline runtime** - no live network dependency  
+✅ **Controllable data** - static data makes runs consistent  
+✅ **Reproducible evaluation** - easier fair comparison across agents  
+✅ **Batch scenario generation** - quickly build new test cases by editing data files  
+✅ **Safe by design** - no real transactions or personal account risk by default
 
-### 应用场景
+### Typical use cases
 
-1. **Agent 能力评测** - 测试 AI Agent 在购物、预订等任务上的表现
-2. **对比实验** - 在相同环境下对比不同 Agent 或提示词的效果
-3. **回归测试** - 验证 Agent 更新后是否保持原有能力
-4. **教学演示** - 展示 Web Agent 工作原理
-5. **数据集构建** - 可以批量收集 Agent 交互轨迹用于训练和分析
+1. **Agent capability benchmarking** - compare performance on shopping/booking/task workflows
+2. **A/B experiments** - evaluate prompts, policies, or models in identical environments
+3. **Regression testing** - verify behavior after agent updates
+4. **Education and demos** - demonstrate how web agents work end-to-end
+5. **Dataset construction** - collect interaction trajectories for training and analysis
 
-## 🌐 已实现的网站
+## 🌐 Implemented Websites
 
-| 网站 | 路径 | 功能 |
+| Website | Route | Capabilities |
 |------|------|------|
-| 航班预订 | `/flights` | 航班搜索、筛选、预订 |
-| 亚马逊购物 | `/amazon` | 商品浏览、搜索、购物车、结算 |
-| Bose 官网 | `/bose` | 音频产品浏览、搜索、购物车、结算 |
-| 优酷视频 | `/youku` | 视频浏览、搜索、播放、VIP会员、收藏、历史记录 |
-| 酒店预订 | `/hotels` | 酒店搜索、筛选、详情、预订 |
-| 民宿预订 | `/staybnb` | 房源浏览、搜索、收藏、行程、预订 |
-| 租车服务 | `/carrental` | 车型搜索、筛选、门店、优惠、预订 |
-| 职业社交 | `/careerlink` | 职位搜索、公司页、消息、通知、个人主页 |
-| 演出票务 | `/masterticket` | 活动搜索、详情、选座、结算 |
-| 外卖平台 | `/mealdash` | 餐厅浏览、分类、购物车、下单、订单追踪 |
-| 公司点评 | `/companycheck` | 公司搜索、薪资、面试、评价、岗位信息 |
-| 邮件系统 | `/email` | 收件箱、标签、线程、文件夹、邮件详情 |
+| Flight Booking | `/flights` | Search, filter, and book flights |
+| Amazon Shopping | `/amazon` | Product browsing, search, cart, checkout |
+| Bose Website | `/bose` | Audio product browsing, search, cart, checkout |
+| Youku Video | `/youku` | Video browsing, search, playback, VIP, favorites, history |
+| Hotel Booking | `/hotels` | Hotel search, filtering, detail, booking |
+| StayBnB | `/staybnb` | Listings, search, favorites, trips, booking |
+| Car Rental | `/carrental` | Vehicle search, filtering, locations, offers, booking |
+| Career Network | `/careerlink` | Jobs, company pages, messaging, notifications, profile |
+| Event Ticketing | `/masterticket` | Event search, detail, seat selection, checkout |
+| Food Delivery | `/mealdash` | Restaurant browsing, categories, cart, ordering, tracking |
+| Company Reviews | `/companycheck` | Company search, salaries, interviews, reviews, jobs |
+| Email System | `/email` | Inbox, labels, threads, folders, email details |
 
-## 📁 项目结构
+## 📁 Project Structure
 
-```
+```text
 WebClone/
 ├── src/
-│   ├── components/          # React 组件
-│   │   ├── amazon/          # Amazon 组件
-│   │   ├── bose/            # Bose 组件
-│   │   ├── hotels/          # 酒店组件
-│   │   ├── staybnb/         # 民宿组件
-│   │   ├── carrental/       # 租车组件
-│   │   ├── careerlink/      # 职业社交组件
-│   │   ├── masterticket/    # 票务组件
-│   │   ├── mealdash/        # 外卖组件
-│   │   ├── companycheck/    # 公司点评组件
-│   │   ├── email/           # 邮件组件
-│   │   ├── youku/           # 优酷组件
-│   │   ├── Header.js        # 通用头部组件
-│   │   ├── Footer.js        # 通用底部组件
-│   │   ├── SearchForm.js    # 搜索表单
-│   │   ├── FlightCard.js    # 航班卡片
-│   │   ├── FlightDetails.js # 航班详情
-│   │   └── FlightFilters.js # 航班筛选
+│   ├── components/          # React components
+│   │   ├── amazon/
+│   │   ├── bose/
+│   │   ├── hotels/
+│   │   ├── staybnb/
+│   │   ├── carrental/
+│   │   ├── careerlink/
+│   │   ├── masterticket/
+│   │   ├── mealdash/
+│   │   ├── companycheck/
+│   │   ├── email/
+│   │   ├── youku/
+│   │   ├── Header.js
+│   │   ├── Footer.js
+│   │   ├── SearchForm.js
+│   │   ├── FlightCard.js
+│   │   ├── FlightDetails.js
+│   │   └── FlightFilters.js
 │   │
-│   ├── pages/               # Next.js 页面路由
-│   │   ├── amazon/          # Amazon 页面
-│   │   │   ├── index.js     # 首页
-│   │   │   ├── search.js    # 搜索页
-│   │   │   ├── cart.js      # 购物车
-│   │   │   ├── checkout.js  # 结算页
-│   │   │   ├── category/    # 分类页
-│   │   │   └── product/     # 产品详情页
-│   │   ├── bose/            # Bose 页面
-│   │   │   ├── index.js     # 首页
-│   │   │   ├── search.js    # 搜索页
-│   │   │   ├── cart.js      # 购物车
-│   │   │   └── product/     # 产品详情页
-│   │   ├── youku/           # 优酷页面
-│   │   │   ├── index.js     # 首页
-│   │   │   ├── search.js    # 搜索页
-│   │   │   ├── vip.js       # VIP会员页
-│   │   │   ├── favorites.js # 收藏页
-│   │   │   ├── history.js   # 历史记录
-│   │   │   ├── video/       # 视频详情页
-│   │   │   ├── channel/     # 频道页
-│   │   │   └── user/        # 用户中心
-│   │   ├── flights/         # 航班页面
-│   │   │   ├── index.js     # 首页
-│   │   │   ├── search.js    # 搜索页
-│   │   │   └── [id]/book.js # 预订页
-│   │   ├── hotels/          # 酒店页面
-│   │   ├── staybnb/         # 民宿页面
-│   │   ├── carrental/       # 租车页面
-│   │   ├── careerlink/      # 职业社交页面
-│   │   ├── masterticket/    # 票务页面
-│   │   ├── mealdash/        # 外卖页面
-│   │   ├── companycheck/    # 公司点评页面
-│   │   ├── email/           # 邮件页面
-│   │   ├── index.js         # 主页
-│   │   └── _app.js          # App 入口
+│   ├── pages/               # Next.js routes
+│   │   ├── amazon/
+│   │   ├── bose/
+│   │   ├── youku/
+│   │   ├── flights/
+│   │   ├── hotels/
+│   │   ├── staybnb/
+│   │   ├── carrental/
+│   │   ├── careerlink/
+│   │   ├── masterticket/
+│   │   ├── mealdash/
+│   │   ├── companycheck/
+│   │   ├── email/
+│   │   ├── index.js
+│   │   └── _app.js
 │   │
-│   ├── data/                # 静态数据（可修改以生成不同测试场景）
-│   │   ├── amazonData.js    # Amazon 产品数据
-│   │   ├── boseData.js      # Bose 产品数据
-│   │   ├── youkuData.js     # 优酷视频数据
-│   │   ├── staticFlightData.js      # 航班数据
-│   │   ├── staticHotelData.js       # 酒店数据
-│   │   ├── staticStaybnbData.js     # 民宿数据
-│   │   ├── staticCarRentalData.js   # 租车数据
-│   │   ├── staticCareerLinkData.js  # 职业社交数据
-│   │   ├── staticMasterTicketData.js# 票务数据
-│   │   ├── staticMealDashData.js    # 外卖数据
-│   │   ├── staticCompanyCheckData.js# 公司点评数据
-│   │   └── staticEmailData.js       # 邮件数据
+│   ├── data/                # Static data files
+│   │   ├── amazonData.js
+│   │   ├── boseData.js
+│   │   ├── youkuData.js
+│   │   ├── staticFlightData.js
+│   │   ├── staticHotelData.js
+│   │   ├── staticStaybnbData.js
+│   │   ├── staticCarRentalData.js
+│   │   ├── staticCareerLinkData.js
+│   │   ├── staticMasterTicketData.js
+│   │   ├── staticMealDashData.js
+│   │   ├── staticCompanyCheckData.js
+│   │   └── staticEmailData.js
 │   │
-│   ├── utils/               # 工具函数
+│   ├── utils/               # Utility helpers
 │   │   ├── flightData.js
 │   │   ├── hotelData.js
 │   │   ├── staybnbData.js
@@ -141,10 +120,10 @@ WebClone/
 ├── public/
 │   ├── favicon.ico
 │   └── images/
-│       ├── amazon/          # Amazon 产品图片
-│       ├── bose/            # Bose 产品图片
-│       ├── hotels/          # 酒店图片
-│       └── youku/           # 优酷视频海报
+│       ├── amazon/
+│       ├── bose/
+│       ├── hotels/
+│       └── youku/
 │
 ├── package.json
 ├── next.config.js
@@ -152,34 +131,34 @@ WebClone/
 └── postcss.config.js
 ```
 
-## 🚀 快速开始
+## 🚀 Quick Start
 
-### 安装依赖
+### Install dependencies
 
 ```bash
 npm install
 ```
 
-### 启动开发服务器
+### Start development server
 
 ```bash
 npm run dev
 ```
 
-访问 http://localhost:3000 查看所有可用网站。
+Open `http://localhost:3000` to access available sites.
 
-### 构建生产版本
+### Build for production
 
 ```bash
 npm run build
 npm start
 ```
 
-## 📊 批量数据生成
+## 📊 Batch Scenario Generation
 
-通过修改 `src/data/` 下的数据文件，可以快速生成不同的测试场景：
+You can quickly create new reproducible scenarios by editing files in `src/data/`.
 
-### 示例：修改商品数据
+### Example: edit product data
 
 ```javascript
 // src/data/amazonData.js
@@ -191,31 +170,31 @@ export const products = [
     rating: 4.8,
     reviews: 1234,
     inStock: true,
-    // 修改这些字段来创建不同场景
+    // edit fields to create different scenarios
   },
-  // 添加更多商品...
+  // add more products...
 ];
 ```
 
-### 示例：修改航班数据
+### Example: edit flight data
 
 ```javascript
 // src/data/staticFlightData.js
 export const flights = [
   {
     id: 1,
-    airline: "东方航空",
-    departure: "北京",
-    arrival: "上海",
+    airline: "Eastern Airlines",
+    departure: "Beijing",
+    arrival: "Shanghai",
     price: 580,
     duration: "2h 15m",
-    // 修改这些字段来创建不同场景
+    // edit fields to create different scenarios
   },
-  // 添加更多航班...
+  // add more flights...
 ];
 ```
 
-### 示例：修改酒店数据
+### Example: edit hotel data
 
 ```javascript
 // src/data/staticHotelData.js
@@ -225,119 +204,110 @@ export const hotels = [
     name: "Grand Luxury Hotel",
     city: "New York",
     pricePerNight: 299,
-    // 修改这些字段来创建不同场景
+    // edit fields to create different scenarios
   },
-  // 添加更多酒店...
+  // add more hotels...
 ];
 ```
 
-## 📝 如何添加新网站
+## 📝 How To Add A New Website
 
-### 1. 创建组件目录
+### 1) Create component directory
 
-在 `src/components/` 下创建新网站的组件目录：
-
-```
+```text
 src/components/your_site/
-├── YourSiteHeader.js    # 头部导航
-├── YourSiteCard.js      # 列表卡片
-└── YourSiteFilters.js   # 筛选组件
+├── YourSiteHeader.js
+├── YourSiteCard.js
+└── YourSiteFilters.js
 ```
 
-### 2. 创建页面路由
+### 2) Create route pages
 
-在 `src/pages/` 下创建页面目录：
-
-```
+```text
 src/pages/your_site/
-├── index.js             # 首页
-├── search.js            # 搜索/列表页
-└── [id].js              # 详情页（动态路由）
+├── index.js
+├── search.js
+└── [id].js
 ```
 
-### 3. 创建静态数据
-
-在 `src/data/` 下创建数据文件：
+### 3) Add static data
 
 ```javascript
 // src/data/yourSiteData.js
 export const yourSiteItems = [
   {
     id: 1,
-    name: "示例项目",
+    name: "Sample Item",
     price: 99.99,
-    // ... 其他字段
+    // ...more fields
   }
 ];
 ```
 
-### 4. 添加到主页
+### 4) Add site entry to homepage
 
-在 `src/pages/index.js` 的 `sites` 数组中添加：
+Add a card config in `src/pages/index.js`:
 
 ```javascript
 {
-  name: '你的网站',
+  name: 'Your Site',
   path: '/your_site',
-  description: '网站描述',
-  color: '#颜色代码',
+  description: 'Site description',
+  color: '#your-color',
   icon: '🎯'
 }
 ```
 
-### 5. 添加资源文件（可选）
+### 5) Add assets (optional)
 
-如果需要图片资源，放置在：
-
-```
+```text
 public/images/your_site/
 ├── products/
 ├── banners/
 └── ...
 ```
 
-## 🎨 命名规范
+## 🎨 Naming Conventions
 
-- **组件目录**: 小写，如 `amazon`、`flights`、`bose`、`youku`、`hotels`、`staybnb`
-- **组件文件**: 大驼峰，如 `ProductCard.js`
-- **页面文件**: 小写，如 `index.js`、`search.js`
-- **数据文件**: 小驼峰，如 `amazonData.js`
+- **Component directories**: lowercase, e.g. `amazon`, `flights`, `bose`, `youku`, `hotels`, `staybnb`
+- **Component files**: PascalCase, e.g. `ProductCard.js`
+- **Page files**: lowercase, e.g. `index.js`, `search.js`
+- **Data files**: camelCase, e.g. `amazonData.js`
 
-## 🔬 评测建议
+## 🔬 Evaluation Suggestions
 
-### 设计可复现的测试任务
+### Define reproducible tasks
 
 ```javascript
-// 示例任务定义
 const task = {
   id: "amazon-search-001",
-  description: "在 Amazon 搜索 'iPhone 15'，找到价格最低的商品并加入购物车",
+  description: "Search for iPhone 15 on Amazon, find the lowest-price result, and add it to cart",
   startUrl: "/amazon",
   expectedActions: ["search", "filter", "add_to_cart"],
-  successCriteria: "购物车中包含目标商品"
+  successCriteria: "Target product appears in cart"
 };
 ```
 
-### 记录 Agent 交互轨迹
+### Log interaction traces
 
-建议在测试时记录：
-- 每一步的 DOM 状态
-- Agent 的决策和动作
-- 任务完成时间
-- 最终结果（成功/失败）
+Recommended records:
+- Per-step DOM state
+- Agent decisions and actions
+- Task completion time
+- Final outcome (success/failure)
 
-## 🤝 贡献指南
+## 🤝 Contributing
 
-1. Fork 本仓库
-2. 创建功能分支 (`git checkout -b feature/new-site`)
-3. 提交更改 (`git commit -m 'Add new site: xxx'`)
-4. 推送到分支 (`git push origin feature/new-site`)
-5. 创建 Pull Request
+1. Fork this repository
+2. Create a feature branch (`git checkout -b feature/new-site`)
+3. Commit changes (`git commit -m 'Add new site: xxx'`)
+4. Push your branch (`git push origin feature/new-site`)
+5. Open a Pull Request
 
-欢迎贡献新的网站克隆！请确保：
-- 遵循现有的代码结构和命名规范
-- 提供完整的静态数据
-- 更新 README 中的网站列表
+Please ensure:
+- You follow existing structure and naming conventions
+- You provide complete static data
+- You update the website list in README
 
 ## 📜 License
 
